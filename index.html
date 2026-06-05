@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TERUMO - Rewards & Recognitions (ReWandReC)</title>
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Login screen overlay -->
+    <div id="login-container" class="login-overlay active">
+        <div class="login-card split-login-card">
+            <!-- Left Pane: Branding & Elevate campaign -->
+            <div class="login-left-pane animate-fade-in">
+                <div class="login-left-brand">
+                    <img src="terumo_logo.png" alt="Terumo Logo" class="login-left-logo-img">
+                    <div class="login-left-title">ReWandReC</div>
+                    <div class="login-left-subtitle">Rewards & Recognitions</div>
+                </div>
+                
+                <div class="login-left-campaign">
+                    <img src="elevate_logo.png" alt="Elevate Logo" class="login-elevate-logo">
+                </div>
+                
+                <!-- Bottom mountain graphics silhouette styling -->
+                <div class="login-left-bg-mountains">
+                    <svg viewBox="0 0 400 100" preserveAspectRatio="none" style="width: 100%; height: 70px; display: block; fill: #cbd5e1; opacity: 0.4;">
+                        <polygon points="0,100 60,35 120,75 180,25 250,85 310,15 370,65 400,30 400,100" />
+                        <polygon points="0,100 90,45 150,85 210,40 280,80 340,30 400,85 400,100" style="fill: #94a3b8; opacity: 0.6;" />
+                    </svg>
+                </div>
+            </div>
+            
+            <!-- Right Pane: Form input elements -->
+            <div class="login-right-pane animate-slide-up">
+                <form id="login-form" class="login-form">
+                    <h2 class="login-welcome">Welcome Back!</h2>
+                    <p class="login-welcome-sub">Login to your account</p>
+                    
+                    <div class="form-group">
+                        <label for="login-email">Email or Employee Code</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fa-solid fa-envelope"></i>
+                            <input type="text" id="login-email" class="form-control" placeholder="Enter email or employee code" value="vivek.sharma@terumo.com" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fa-solid fa-lock"></i>
+                            <input type="password" id="login-password" class="form-control" placeholder="Enter password" value="password123" required>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between align-center mb-4" style="font-size: 0.8rem;">
+                        <label class="check-label">
+                            <input type="checkbox" checked> Remember me
+                        </label>
+                        <a href="#" style="color: var(--color-primary); text-decoration: none; font-weight: 600;">Forgot Password?</a>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-full" style="justify-content: center; padding: 0.75rem; font-size: 0.95rem;">
+                        <i class="fa-solid fa-right-to-bracket"></i> Login
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-container">
+        
+        <!-- SIDEBAR NAVIGATION -->
+        <aside>
+            <div>
+                <!-- Terumo Brand Logo -->
+                <div class="brand">
+                    <img src="terumo_logo.png" alt="Terumo Logo" class="brand-logo-img">
+                    <span class="brand-subtext">Rewards & Recognitions</span>
+                </div>
+                
+                <ul class="nav-links">
+                    <li class="nav-item active" data-view="dashboard">
+                        <a href="#"><i class="fa-solid fa-house"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item" data-view="nominations">
+                        <a href="#"><i class="fa-solid fa-paper-plane"></i> Nominations</a>
+                    </li>
+                    <li class="nav-item" id="nav-approvals" data-view="approvals">
+                        <a href="#"><i class="fa-solid fa-square-check"></i> Approvals <span class="tab-count" id="nav-approvals-count" style="display:none; background:var(--color-accent-red); color:white;">0</span></a>
+                    </li>
+                    <li class="nav-item" data-view="reports">
+                        <a href="#"><i class="fa-solid fa-chart-simple"></i> Reports & Analytics</a>
+                    </li>
+                    <li class="nav-item" data-view="employees">
+                        <a href="#"><i class="fa-solid fa-users"></i> Employees</a>
+                    </li>
+                    <li class="nav-item" data-view="notifications">
+                        <a href="#"><i class="fa-solid fa-bell"></i> Notifications <span class="tab-count" id="nav-notif-count" style="display:none;">0</span></a>
+                    </li>
+                    <li class="nav-item" id="nav-audit" data-view="audit">
+                        <a href="#"><i class="fa-solid fa-receipt"></i> Audit Logs</a>
+                    </li>
+                    <li class="nav-item" data-view="settings">
+                        <a href="#"><i class="fa-solid fa-gear"></i> Settings</a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Bottom User Profile Card -->
+            <div class="user-profile-summary">
+                <div class="user-card">
+                    <div class="avatar" id="current-user-avatar">VS</div>
+                    <div class="user-info">
+                        <div class="user-name" id="current-user-name">Vivek Sharma</div>
+                        <div class="user-role-badge" id="current-user-role">Employee</div>
+                    </div>
+                </div>
+                <!-- Campaign Brand Footer -->
+                <div class="campaign-brand-footer">
+                    <img src="elevate_logo.png" alt="Elevate Logo" class="campaign-logo-img">
+                    <span class="campaign-text">Terumo India</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN LAYOUT SPACE -->
+        <main>
+            
+            <!-- TOP BAR HEADER -->
+            <header>
+                <!-- Search bar -->
+                <div class="search-container">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" class="search-input" placeholder="Search anything...">
+                </div>
+                
+                <div class="flex align-center gap-4">
+                    <!-- Dynamic Identity Switcher -->
+                    <div class="role-switcher-container">
+                        <span class="role-switcher-label"><i class="fa-solid fa-circle-user"></i> Act As:</span>
+                        <select id="user-role-selector" class="role-select">
+                            <!-- Populated dynamically by app.js -->
+                        </select>
+                    </div>
+                    
+                    <!-- Notification bell with badge -->
+                    <button class="notification-bell-btn" id="bell-btn">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="bell-badge" id="bell-badge" style="display: none;">3</span>
+                    </button>
+                    
+                    <!-- Reset System Database Button -->
+                    <button class="btn btn-secondary btn-sm" id="btn-db-reset-system" style="padding: 0.4rem 0.6rem; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.35rem; color: var(--color-accent-red); border-color: rgba(227, 0, 22, 0.15);" title="Reset system database to default settings">
+                        <i class="fa-solid fa-arrows-rotate"></i> Reset DB
+                    </button>
+                </div>
+            </header>
+            
+            <!-- VIEW SHELLS -->
+            
+            <!-- 1. DUAL-STATE DASHBOARD VIEW -->
+            <div id="dashboard-view" class="view-panel active">
+                
+                <!-- STATE A: EMPLOYEE PORTAL (Wireframe 7) -->
+                <div id="employee-dashboard" class="role-dashboard">
+                    <div class="card-header">
+                        <div class="header-title-area">
+                            <h2 class="card-title"><i class="fa-solid fa-wallet"></i> My Personal Workspace</h2>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">View rewards won and initiate self or peer nominations.</p>
+                        </div>
+                        <button class="btn btn-primary" id="btn-dashboard-self-nominate">
+                            <i class="fa-solid fa-hand-holding-heart"></i> Nominate Self/Peer
+                        </button>
+                    </div>
+
+                    <!-- Personal Stats -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon primary"><i class="fa-solid fa-trophy"></i></div>
+                            <div class="stat-details">
+                                <h3>Total Rewards Received</h3>
+                                <div class="stat-number" id="emp-total-rewards">₹50,000</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon secondary"><i class="fa-solid fa-medal"></i></div>
+                            <div class="stat-details">
+                                <h3>Awards Won</h3>
+                                <div class="stat-number" id="emp-awards-count">2</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon warning"><i class="fa-solid fa-paper-plane"></i></div>
+                            <div class="stat-details">
+                                <h3>Submitted Nominations</h3>
+                                <div class="stat-number" id="emp-nominations-count">1</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- My Award History Cards (Wireframe 7 Grid) -->
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> My Award History</h3>
+                        </div>
+                        <div class="award-cards-grid" id="emp-history-cards">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- STATE B: MANAGER / HR / ADMIN DASHBOARD (Wireframe 1) -->
+                <div id="manager-hr-dashboard" class="role-dashboard" style="display: none;">
+                    
+                    <!-- Metrics grid matching Wireframe 1 -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon primary"><i class="fa-solid fa-paste"></i></div>
+                            <div class="stat-details">
+                                <h3>Total Nominations</h3>
+                                <div class="stat-number" id="mgr-total-nominations">128</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon warning"><i class="fa-solid fa-hourglass-half"></i></div>
+                            <div class="stat-details">
+                                <h3>Pending HR Approvals</h3>
+                                <div class="stat-number" id="mgr-pending-hr">34</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon danger"><i class="fa-solid fa-circle-exclamation"></i></div>
+                            <div class="stat-details">
+                                <h3>Pending Leadership</h3>
+                                <div class="stat-number" id="mgr-pending-leadership">12</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon secondary"><i class="fa-solid fa-circle-check"></i></div>
+                            <div class="stat-details">
+                                <h3>Approved Winners</h3>
+                                <div class="stat-number" id="mgr-approved-winners">18</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon primary"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                            <div class="stat-details">
+                                <h3>Remaining Budget</h3>
+                                <div class="stat-number" id="mgr-remaining-budget">₹7,65,000</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid-2">
+                        <!-- Recent Nominations Table -->
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fa-solid fa-list"></i> Recent Nominations</h3>
+                            </div>
+                            <div class="table-wrapper">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Employee</th>
+                                            <th>Award</th>
+                                            <th>Status</th>
+                                            <th>Submitted On</th>
+                                            <th class="text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="mgr-recent-table">
+                                        <!-- Seeds -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Donut Graphic Chart Status -->
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fa-solid fa-chart-pie"></i> Nominations by Status</h3>
+                            </div>
+                            <div class="donut-chart-box">
+                                <div class="donut-graphic">
+                                    <span class="donut-graphic-text" id="donut-total-val">128</span>
+                                </div>
+                                <ul class="donut-legend">
+                                    <li class="donut-legend-item">
+                                        <span class="donut-dot" style="background: var(--color-primary);"></span>
+                                        Approved (<span id="donut-pct-approved">36%</span>)
+                                    </li>
+                                    <li class="donut-legend-item">
+                                        <span class="donut-dot" style="background: #3b82f6;"></span>
+                                        Pending HR (<span id="donut-pct-hr">28%</span>)
+                                    </li>
+                                    <li class="donut-legend-item">
+                                        <span class="donut-dot" style="background: var(--color-warning);"></span>
+                                        Pending Leadership (<span id="donut-pct-leadership">26%</span>)
+                                    </li>
+                                    <li class="donut-legend-item">
+                                        <span class="donut-dot" style="background: var(--color-danger);"></span>
+                                        Rejected (<span id="donut-pct-rejected">10%</span>)
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <!-- Additional stats details footer of wireframe 1 -->
+                            <div class="flowchart-container mt-4" style="padding:0.75rem; background:transparent; border:none; margin:0;">
+                                <div class="text-center">
+                                    <div style="font-size:0.75rem; color:var(--text-muted);">TOP VALUE</div>
+                                    <strong style="color:var(--color-primary);" id="top-value-lbl">Innovation</strong>
+                                </div>
+                                <div class="text-center">
+                                    <div style="font-size:0.75rem; color:var(--text-muted);">TOP COMPETENCY</div>
+                                    <strong style="color:var(--color-primary);" id="top-comp-lbl">Leadership</strong>
+                                </div>
+                                <div class="text-center">
+                                    <div style="font-size:0.75rem; color:var(--text-muted);">THIS MONTH WINNERS</div>
+                                    <strong style="color:var(--color-primary);" id="month-winners-lbl">10</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Leadership Insights Card -->
+                    <div id="leadership-analytics-card" class="content-card mt-4" style="display: none;">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fa-solid fa-chart-bar"></i> Leadership Analytics: Nomination Status Distribution</h3>
+                        </div>
+                        <div class="leadership-charts-grid">
+                            <div class="chart-container">
+                                <h4>Program Breakdown</h4>
+                                <div id="program-bar-chart" class="bar-chart-wrapper">
+                                    <!-- Dynamic content -->
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <h4>Department Distribution</h4>
+                                <div id="dept-bar-chart" class="bar-chart-wrapper">
+                                    <!-- Dynamic content -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stacked-legend">
+                            <div class="donut-legend-item">
+                                <span class="donut-dot" style="background: var(--color-primary);"></span>
+                                Approved
+                            </div>
+                            <div class="donut-legend-item">
+                                <span class="donut-dot" style="background: #a855f7;"></span>
+                                Pending Manager
+                            </div>
+                            <div class="donut-legend-item">
+                                <span class="donut-dot" style="background: #3b82f6;"></span>
+                                Pending HR
+                            </div>
+                            <div class="donut-legend-item">
+                                <span class="donut-dot" style="background: var(--color-warning);"></span>
+                                Pending Leadership
+                            </div>
+                            <div class="donut-legend-item">
+                                <span class="donut-dot" style="background: var(--color-danger);"></span>
+                                Rejected
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- STATE C: ADMINISTRATOR PORTAL (Wireframe 9 & 13) -->
+                <div id="admin-dashboard" class="role-dashboard" style="display: none;">
+                    <div class="card-header">
+                        <div class="header-title-area">
+                            <h2 class="card-title"><i class="fa-solid fa-screwdriver-wrench"></i> Administrative System Control</h2>
+                            <p style="font-size: 0.8rem; color: var(--text-muted);">Manage platform core alignments, check system statistics, and audit active schemas.</p>
+                        </div>
+                    </div>
+
+                    <!-- Admin Dashboard Tabs -->
+                    <div class="tab-headers" style="margin-top: 1rem; border-bottom: 2px solid var(--border-color);">
+                        <button class="tab-btn active" id="admin-tab-alignments"><i class="fa-solid fa-compass"></i> Core Alignments</button>
+                        <button class="tab-btn" id="admin-tab-awards"><i class="fa-solid fa-award"></i> Award Management</button>
+                    </div>
+
+                    <!-- TAB 1: CORE ALIGNMENTS (Wireframe 9) -->
+                    <div id="admin-alignments-container" class="mt-4">
+                        <!-- Admin Statistics Metrics Grid -->
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon primary"><i class="fa-solid fa-users"></i></div>
+                                <div class="stat-details">
+                                    <h3>Total Directory Users</h3>
+                                    <div class="stat-number" id="admin-stats-users">7</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon success"><i class="fa-solid fa-seedling"></i></div>
+                                <div class="stat-details">
+                                    <h3>Active Core Values</h3>
+                                    <div class="stat-number" id="admin-stats-values">5</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon warning"><i class="fa-solid fa-brain"></i></div>
+                                <div class="stat-details">
+                                    <h3>Active Competencies</h3>
+                                    <div class="stat-number" id="admin-stats-competencies">6</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon danger"><i class="fa-solid fa-shield-halved"></i></div>
+                                <div class="stat-details">
+                                    <h3>Audit Transactions</h3>
+                                    <div class="stat-number" id="admin-stats-audits">4</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid-2">
+                            <!-- Core Values Management Table -->
+                            <div class="content-card">
+                                <div class="card-header">
+                                    <h3 class="card-title"><i class="fa-solid fa-award"></i> Core Values Alignment</h3>
+                                    <form id="admin-add-value-form" class="flex gap-2" style="margin: 0; align-items: center;">
+                                        <input type="text" id="admin-new-value-input" class="form-control" placeholder="Add Value..." required style="padding: 0.25rem 0.5rem; font-size: 0.8rem; width: 140px;">
+                                        <button type="submit" class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;"><i class="fa-solid fa-plus"></i></button>
+                                    </form>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Value Name</th>
+                                                <th>Status</th>
+                                                <th class="text-right">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="admin-values-table-body">
+                                            <!-- Injected dynamically -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Competencies Management Table -->
+                            <div class="content-card">
+                                <div class="card-header">
+                                    <h3 class="card-title"><i class="fa-solid fa-graduation-cap"></i> Competencies Alignment</h3>
+                                    <form id="admin-add-competency-form" class="flex gap-2" style="margin: 0; align-items: center;">
+                                        <input type="text" id="admin-new-competency-input" class="form-control" placeholder="Add Competency..." required style="padding: 0.25rem 0.5rem; font-size: 0.8rem; width: 140px;">
+                                        <button type="submit" class="btn btn-primary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;"><i class="fa-solid fa-plus"></i></button>
+                                    </form>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Competency Name</th>
+                                                <th>Status</th>
+                                                <th class="text-right">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="admin-competencies-table-body">
+                                            <!-- Injected dynamically -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Flow Diagram Flow Chart in Dashboard -->
+                        <div class="content-card mt-4">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fa-solid fa-route"></i> Active Approval Pipeline Architecture</h3>
+                            </div>
+                            <div class="flowchart-container mt-2">
+                                <div class="flowchart-node active" style="font-size: 0.8rem; padding: 0.75rem;">
+                                    <i class="fa-solid fa-shield-halved" style="font-size: 1.2rem; margin-bottom: 0.25rem;"></i><br>HR Validation
+                                    <span style="font-size:0.65rem; display:block; color:rgba(255,255,255,0.7);">(Level 1)</span>
+                                </div>
+                                <div class="flowchart-arrow"><i class="fa-solid fa-circle-arrow-right"></i></div>
+                                <div class="flowchart-node active" style="font-size: 0.8rem; padding: 0.75rem;">
+                                    <i class="fa-solid fa-signature" style="font-size: 1.2rem; margin-bottom: 0.25rem;"></i><br>Leadership Review
+                                    <span style="font-size:0.65rem; display:block; color:rgba(255,255,255,0.7);">(Level 2)</span>
+                                </div>
+                                <div class="flowchart-arrow"><i class="fa-solid fa-circle-arrow-right"></i></div>
+                                <div class="flowchart-node" style="font-size: 0.8rem; padding: 0.75rem;">
+                                    <i class="fa-solid fa-trophy" style="font-size: 1.2rem; margin-bottom: 0.25rem;"></i><br>Winner Declaration
+                                    <span style="font-size:0.65rem; display:block; color:var(--text-muted);">(Final Stage)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: AWARD PROGRAMS CUSTOMIZER (Admin Award Management) -->
+                    <div id="admin-awards-container" class="mt-4" style="display: none;">
+                        <div class="content-card">
+                            <div class="card-header">
+                                <div class="header-title-area">
+                                    <h3 class="card-title"><i class="fa-solid fa-award"></i> Reward Programs & Customizations</h3>
+                                    <p style="font-size:0.75rem; color:var(--text-muted);">Configure budget pools, maximum declarations, frequencies, and nominate criteria.</p>
+                                </div>
+                                <button class="btn btn-primary" id="btn-admin-add-award"><i class="fa-solid fa-plus"></i> Add Program</button>
+                            </div>
+                            <div class="table-wrapper">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Program Title</th>
+                                            <th>Type</th>
+                                            <th>Allocated Budget</th>
+                                            <th>Used Budget</th>
+                                            <th>Frequency</th>
+                                            <th>Self Nom?</th>
+                                            <th>Status</th>
+                                            <th class="text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-awards-table-body">
+                                        <!-- Injected dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. NOMINATION FORM VIEW (Wireframe 2) -->
+            <div id="nominations-view" class="view-panel">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-paper-plane"></i> Nomination Submission Wizard</h2>
+                        <p style="font-size:0.8rem; color:var(--text-muted);">Submit peer recognition or executive awards approval lines.</p>
+                    </div>
+                    
+                    <form id="nomination-form-wizard">
+                        <div class="form-row" id="wiz-selectors-row">
+                            <!-- Category Select -->
+                            <div class="form-group">
+                                <label>Nomination Category *</label>
+                                <div class="flex gap-4 mt-2">
+                                    <label class="check-label">
+                                        <input type="radio" name="wiz_category" value="Individual" checked id="wiz-cat-indiv"> Individual
+                                    </label>
+                                    <label class="check-label">
+                                        <input type="radio" name="wiz_category" value="Team" id="wiz-cat-team"> Team
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- Type Select -->
+                            <div class="form-group">
+                                <label>Nomination Type *</label>
+                                <div class="flex gap-4 mt-2">
+                                    <label class="check-label">
+                                        <input type="radio" name="wiz_type" value="Self" id="wiz-type-self"> Self
+                                    </label>
+                                    <label class="check-label">
+                                        <input type="radio" name="wiz_type" value="Manager" checked id="wiz-type-mgr"> Manager
+                                    </label>
+                                    <label class="check-label">
+                                        <input type="radio" name="wiz_type" value="Leadership" id="wiz-type-ldr"> Leadership
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <!-- Select Nominee -->
+                            <div class="form-group">
+                                <label for="wiz-select-employee" id="lbl-select-employee">Select Employee *</label>
+                                <select id="wiz-select-employee" class="form-control" required>
+                                    <!-- Injected -->
+                                </select>
+                                <div id="wiz-team-chips-box" style="display:none;" class="mt-2 flex wrap gap-2">
+                                    <!-- Dynamic nominee badges -->
+                                </div>
+                            </div>
+                            
+                            <!-- Select Award -->
+                            <div class="form-group">
+                                <label for="wiz-select-award">Select Award *</label>
+                                <select id="wiz-select-award" class="form-control" required>
+                                    <!-- Injected -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="wiz-title">Nomination Project Name / Subject *</label>
+                            <input type="text" id="wiz-title" class="form-control" placeholder="e.g. Hospital UI Re-design MVP" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="wiz-reason">Reason for Nomination *</label>
+                            <textarea id="wiz-reason" class="form-control" placeholder="Describe how this employee showed outstanding values..." required></textarea>
+                            <button type="button" class="btn btn-outline btn-sm ai-enhance-btn" id="btn-ai-enhance-reason" style="margin-top: 0.5rem; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; color: #a855f7; border-color: #a855f7; padding: 0.25rem 0.6rem;">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> AI Enhance Reason
+                            </button>
+                        </div>
+
+                        <!-- Core Values checklist -->
+                        <div class="form-group">
+                            <label>Core Values Alignment (Select all that apply)</label>
+                            <div class="checklist-grid" id="wiz-core-values-checklist">
+                                <!-- Injected -->
+                            </div>
+                        </div>
+
+                        <!-- Competencies checklist -->
+                        <div class="form-group">
+                            <label>Competencies Met (Select all that apply)</label>
+                            <div class="checklist-grid" id="wiz-competencies-checklist">
+                                <!-- Injected -->
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="wiz-outcome">Achievement / Project Outcome (Optional)</label>
+                                <input type="text" id="wiz-outcome" class="form-control" placeholder="e.g. Delivers module 10 days ahead of schedule">
+                            </div>
+                            <div class="form-group">
+                                <label for="wiz-metric">Outcome Metric Details (Optional)</label>
+                                <input type="text" id="wiz-metric" class="form-control" placeholder="e.g. Saved 40 engineering hours, 40% efficiency boost">
+                            </div>
+                        </div>
+                        <div style="margin-top: -0.5rem; margin-bottom: 1rem;">
+                            <button type="button" class="btn btn-outline btn-sm ai-enhance-btn" id="btn-ai-enhance-outcome" style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; color: #a855f7; border-color: #a855f7; padding: 0.25rem 0.6rem;">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> AI Enhance Achievements
+                            </button>
+                        </div>
+
+                        <!-- Attachments block -->
+                        <div class="form-group">
+                            <label>Supporting Documents</label>
+                            <div class="file-upload-zone" id="wiz-file-uploader-box">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <p id="wiz-upload-filename-text">Click to mock upload documents (project_report.pdf)</p>
+                                <input type="file" id="wiz-hidden-file" style="display:none;">
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between mt-4">
+                            <button type="button" class="btn btn-secondary" id="btn-wiz-reset">Reset</button>
+                            <button type="submit" class="btn btn-primary">Submit Nomination</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 3. APPROVALS TAB VIEW (Wireframe 3 & 4) -->
+            <div id="approvals-view" class="view-panel">
+                <div class="content-card">
+                    <!-- Tab buttons inside header -->
+                    <div class="card-header">
+                        <div class="header-title-area">
+                            <h2 class="card-title"><i class="fa-solid fa-square-check"></i> Pending Sign-offs Dashboard</h2>
+                            <p style="font-size:0.8rem; color:var(--text-muted);">Validate, escalate, or final announce rewards winner portfolios.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-headers">
+                        <button class="tab-btn active" id="tab-pending-signoffs">Pending <span class="tab-count" id="count-pending-approvals">0</span></button>
+                        <button class="tab-btn" id="tab-approved-signoffs">Approved <span class="tab-count" id="count-approved-approvals">0</span></button>
+                        <button class="tab-btn" id="tab-rejected-signoffs">Rejected <span class="tab-count" id="count-rejected-approvals">0</span></button>
+                    </div>
+
+                    <!-- Table showing results -->
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nominee</th>
+                                    <th>Award Program</th>
+                                    <th>Nominated By</th>
+                                    <th>Nomination Category</th>
+                                    <th>Type</th>
+                                    <th>Date</th>
+                                    <th class="text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="approvals-table-body">
+                                <!-- Dynamic signoff lines -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Decisive Escalation panel for Leadership (Wireframe 4 button overlay link) -->
+                    <div id="leadership-decision-forward-panel" class="flex justify-between align-center mt-4 p-4" style="background:#f8fafc; border-radius:8px; border:1px dashed var(--border-color); display:none;">
+                        <span style="font-size:0.85rem; color:var(--text-secondary);"><i class="fa-solid fa-circle-info" style="color:var(--color-primary);"></i> Selected validation lines can be batched to leadership sign-off.</span>
+                        <button class="btn btn-primary" id="btn-forward-batch-leadership">Forward to Leadership <i class="fa-solid fa-forward"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. REPORTS & ANALYTICS VIEW (Wireframe 9) -->
+            <div id="reports-view" class="view-panel">
+                <!-- Top stats boxes matching Wireframe 9 -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon primary"><i class="fa-solid fa-paste"></i></div>
+                        <div class="stat-details">
+                            <h3>Total Nominations</h3>
+                            <div class="stat-number">128</div>
+                            <span style="font-size:0.75rem; color:var(--color-success);"><i class="fa-solid fa-arrow-trend-up"></i> +10% vs last month</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon success"><i class="fa-solid fa-circle-check"></i></div>
+                        <div class="stat-details">
+                            <h3>Approved Winners</h3>
+                            <div class="stat-number" id="rep-winners-val">18</div>
+                            <span style="font-size:0.75rem; color:var(--color-success);"><i class="fa-solid fa-arrow-trend-up"></i> +5% vs last month</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon danger"><i class="fa-solid fa-wallet"></i></div>
+                        <div class="stat-details">
+                            <h3>Budget Utilization</h3>
+                            <div class="stat-number" id="rep-utilization-val">36.25%</div>
+                            <span style="font-size:0.75rem; color:var(--color-success);"><i class="fa-solid fa-arrow-trend-up"></i> +2% vs last month</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <!-- Nominations Trend Mock graph (Wireframe 9) -->
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fa-solid fa-chart-line"></i> Nominations Trend (Last 6 Months)</h3>
+                        </div>
+                        <div class="line-chart-mock">
+                            <div class="chart-bar-mock" style="height: 30%;"></div>
+                            <div class="chart-bar-mock" style="height: 45%;"></div>
+                            <div class="chart-bar-mock" style="height: 60%;"></div>
+                            <div class="chart-bar-mock" style="height: 55%;"></div>
+                            <div class="chart-bar-mock" style="height: 80%;"></div>
+                            <div class="chart-bar-mock" style="height: 95%;"></div>
+                        </div>
+                        <div class="flex justify-between" style="padding: 0 1rem;">
+                            <span class="chart-month-lbl">Jan</span>
+                            <span class="chart-month-lbl">Feb</span>
+                            <span class="chart-month-lbl">Mar</span>
+                            <span class="chart-month-lbl">Apr</span>
+                            <span class="chart-month-lbl">May</span>
+                            <span class="chart-month-lbl">Jun</span>
+                        </div>
+                    </div>
+
+                    <!-- Top Core Values horizontal progress lists -->
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fa-solid fa-star"></i> Core Values Distribution</h3>
+                        </div>
+                        <div class="analytics-bar-row">
+                            <span class="analytics-bar-label">Innovation</span>
+                            <div class="analytics-bar-container">
+                                <div class="analytics-bar-fill" style="width: 80%;"></div>
+                            </div>
+                            <span class="analytics-bar-value">80</span>
+                        </div>
+                        <div class="analytics-bar-row">
+                            <span class="analytics-bar-label">Leadership</span>
+                            <div class="analytics-bar-container">
+                                <div class="analytics-bar-fill" style="width: 72%;"></div>
+                            </div>
+                            <span class="analytics-bar-value">72</span>
+                        </div>
+                        <div class="analytics-bar-row">
+                            <span class="analytics-bar-label">Collaboration</span>
+                            <div class="analytics-bar-container">
+                                <div class="analytics-bar-fill" style="width: 55%;"></div>
+                            </div>
+                            <span class="analytics-bar-value">55</span>
+                        </div>
+                        <div class="analytics-bar-row">
+                            <span class="analytics-bar-label">Integrity</span>
+                            <div class="analytics-bar-container">
+                                <div class="analytics-bar-fill" style="width: 48%;"></div>
+                            </div>
+                            <span class="analytics-bar-value">48</span>
+                        </div>
+                        <div class="analytics-bar-row">
+                            <span class="analytics-bar-label">Excellence</span>
+                            <div class="analytics-bar-container">
+                                <div class="analytics-bar-fill" style="width: 40%;"></div>
+                            </div>
+                            <span class="analytics-bar-value">40</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Award program budget list (Wireframe 6 budget card details) -->
+                <div class="grid-2 mt-4" id="reports-budget-visual-grid">
+                    <!-- Left Column: Visual Gauges and Warnings -->
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fa-solid fa-gauge-high"></i> Budget Breakdown & Alerts</h3>
+                        </div>
+                        <div class="flex justify-between align-center p-4">
+                            <!-- Circular SVG Gauge -->
+                            <div class="relative" style="width: 140px; height: 140px; margin: 0 auto;">
+                                <svg width="140" height="140" viewBox="0 0 140 140">
+                                    <circle cx="70" cy="70" r="55" fill="none" stroke="#f1f5f9" stroke-width="12"></circle>
+                                    <circle id="agg-budget-gauge-fill" cx="70" cy="70" r="55" fill="none" stroke="var(--color-primary)" stroke-width="12" stroke-dasharray="345.57" stroke-dashoffset="345.57" stroke-linecap="round" transform="rotate(-90 70 70)"></circle>
+                                </svg>
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                                    <span id="agg-budget-pct-text" style="font-size: 1.25rem; font-weight: 800; font-family: var(--font-heading); color: var(--text-primary);">0%</span>
+                                    <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">Utilized</div>
+                                </div>
+                            </div>
+                            <!-- Small legend info -->
+                            <div style="font-size: 0.8rem; line-height: 1.6; padding-left: 1rem;">
+                                <div><span class="donut-dot" style="background:#cbd5e1;"></span> Total Allocated: <strong id="agg-budget-allocated">₹0</strong></div>
+                                <div><span class="donut-dot" style="background:var(--color-primary);"></span> Total Spent: <strong id="agg-budget-spent">₹0</strong></div>
+                                <div><span class="donut-dot" style="background:#10b981;"></span> Remaining: <strong id="agg-budget-remaining">₹0</strong></div>
+                            </div>
+                        </div>
+                        <!-- Alarms List -->
+                        <div id="reports-budget-alarms" class="p-4" style="border-top: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 0.5rem;">
+                            <!-- Injected alerts -->
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Programs Table with Progress Bars -->
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fa-solid fa-coins"></i> Program-wise Track</h3>
+                        </div>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Award Program</th>
+                                        <th>Total Budget</th>
+                                        <th>Used Budget</th>
+                                        <th>Utilization</th>
+                                        <th>Status / Alert</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rep-budget-table-body">
+                                    <!-- Seeded -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. EMPLOYEES DIRECTORY VIEW (Wireframe 10) -->
+            <div id="employees-view" class="view-panel">
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="header-title-area">
+                            <h2 class="card-title"><i class="fa-solid fa-users"></i> Employee Directory</h2>
+                            <p style="font-size:0.8rem; color:var(--text-muted);">Manage corporate directory users, assignments, and roles hierarchy.</p>
+                        </div>
+                        <button class="btn btn-primary" id="btn-admin-add-employee" style="display:none;"><i class="fa-solid fa-plus"></i> Add Employee</button>
+                    </div>
+
+                    <!-- Filter panel matching wireframe 10 -->
+                    <div class="filter-bar">
+                        <div class="filter-group">
+                            <label for="dir-filter-dept">Department</label>
+                            <select id="dir-filter-dept" class="filter-select">
+                                <option value="All">All Departments</option>
+                                <!-- Injected -->
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="dir-filter-role">Role</label>
+                            <select id="dir-filter-role" class="filter-select">
+                                <option value="All">All Roles</option>
+                                <!-- Injected -->
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="dir-filter-status">Status</label>
+                            <select id="dir-filter-status" class="filter-select">
+                                <option value="All">All Status</option>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Directory Table -->
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Employee Name</th>
+                                    <th>Employee ID</th>
+                                    <th>Department</th>
+                                    <th>Role</th>
+                                    <th>Manager</th>
+                                    <th>Status</th>
+                                    <th class="text-right" id="th-employee-actions" style="display:none;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="directory-table-body">
+                                <!-- Injected -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. NOTIFICATIONS INBOX VIEW (Wireframe 8) -->
+            <div id="notifications-view" class="view-panel">
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="header-title-area">
+                            <h2 class="card-title"><i class="fa-solid fa-bell"></i> Message Inbox</h2>
+                            <p style="font-size:0.8rem; color:var(--text-muted);">Track timeline milestones, decisions, and system alerts.</p>
+                        </div>
+                    </div>
+
+                    <!-- Filter tabs -->
+                    <div class="tab-headers">
+                        <button class="tab-btn active" id="notif-tab-all">All <span class="tab-count" id="count-notif-all">0</span></button>
+                        <button class="tab-btn" id="notif-tab-unread">Unread <span class="tab-count" id="count-notif-unread">0</span></button>
+                        <button class="tab-btn" id="notif-tab-nominations">Nominations <span class="tab-count" id="count-notif-noms">0</span></button>
+                        <button class="tab-btn" id="notif-tab-approvals">Approvals <span class="tab-count" id="count-notif-apps">0</span></button>
+                    </div>
+
+                    <!-- Notifications timeline list -->
+                    <ul class="feed-list" id="notifications-feed-list" style="padding: 1rem 0;">
+                        <!-- Injected -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 7. SECURE AUDIT LOG VIEW (Wireframe 12) -->
+            <div id="audit-view" class="view-panel">
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="header-title-area">
+                            <h2 class="card-title"><i class="fa-solid fa-receipt"></i> Compliance Audit Trail</h2>
+                            <p style="font-size:0.8rem; color:var(--text-muted);">Secured compliance log recording system transactions and modifications.</p>
+                        </div>
+                    </div>
+
+                    <!-- Dates range filter mock (Wireframe 12) -->
+                    <div class="filter-bar">
+                        <div class="filter-group">
+                            <label>From Date</label>
+                            <input type="date" class="filter-select" value="2026-05-01">
+                        </div>
+                        <div class="filter-group">
+                            <label>To Date</label>
+                            <input type="date" class="filter-select" value="2026-05-20">
+                        </div>
+                        <div class="filter-group">
+                            <label>Actions</label>
+                            <select class="filter-select">
+                                <option>All Actions</option>
+                                <option>CREATE</option>
+                                <option>APPROVE</option>
+                                <option>UPDATE</option>
+                                <option>DELETE</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Action</th>
+                                    <th>Entity</th>
+                                    <th>Details</th>
+                                    <th>Date & Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="audit-table-body">
+                                <!-- Injected -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 8. SETTINGS VIEW (Wireframe 13) -->
+            <div id="settings-view" class="view-panel">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-gear"></i> Administrative System Settings</h2>
+                    </div>
+
+                    <!-- Tab headers -->
+                    <div class="tab-headers">
+                        <button class="tab-btn">General</button>
+                        <button class="tab-btn">Roles & Permissions</button>
+                        <button class="tab-btn active">Workflow Levels</button>
+                        <button class="tab-btn">System Settings</button>
+                    </div>
+
+                    <!-- Workflow Levels active table (Wireframe 13) -->
+                    <div class="mb-4">
+                        <div class="flex justify-between align-center mb-2">
+                            <strong>Workflow Levels (Approval Flow)</strong>
+                            <button class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Add Level</button>
+                        </div>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Level Order</th>
+                                        <th>Level Name</th>
+                                        <th>Role</th>
+                                        <th>Description</th>
+                                        <th class="text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="font-bold">1</td>
+                                        <td>Manager Review</td>
+                                        <td>Manager</td>
+                                        <td>Review and approve/recommend nomination.</td>
+                                        <td class="text-right">
+                                            <button class="btn btn-icon-only btn-sm"><i class="fa-solid fa-pencil"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-bold">2</td>
+                                        <td>HR Review</td>
+                                        <td>HR Manager</td>
+                                        <td>Verify budgets, details, and compliance checks.</td>
+                                        <td class="text-right">
+                                            <button class="btn btn-icon-only btn-sm"><i class="fa-solid fa-pencil"></i></button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-bold">3</td>
+                                        <td>Leadership Review</td>
+                                        <td>Leadership</td>
+                                        <td>Final approval by director/leadership board.</td>
+                                        <td class="text-right">
+                                            <button class="btn btn-icon-only btn-sm"><i class="fa-solid fa-pencil"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Diagram Flow Chart (Wireframe 13) -->
+                    <div class="mt-4">
+                        <strong>Approval Flow Visual Pipeline</strong>
+                        <div class="flowchart-container">
+                            <div class="flowchart-node active">
+                                <i class="fa-solid fa-user-tie"></i><br>Manager Review
+                            </div>
+                            <div class="flowchart-arrow"><i class="fa-solid fa-circle-arrow-right"></i></div>
+                            <div class="flowchart-node">
+                                <i class="fa-solid fa-shield-halved"></i><br>HR Validation
+                            </div>
+                            <div class="flowchart-arrow"><i class="fa-solid fa-circle-arrow-right"></i></div>
+                            <div class="flowchart-node">
+                                <i class="fa-solid fa-signature"></i><br>Leadership Review
+                            </div>
+                            <div class="flowchart-arrow"><i class="fa-solid fa-circle-arrow-right"></i></div>
+                            <div class="flowchart-node">
+                                <i class="fa-solid fa-trophy"></i><br>Winner Declaration
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODAL A: NOMINATION WORKFLOW REVIEW & ACTION -->
+    <div class="modal-overlay" id="approval-review-overlay">
+        <div class="modal-window">
+            <div class="modal-header">
+                <h3 class="modal-title" id="review-modal-title">Nomination Review & Decision</h3>
+                <button class="modal-close-btn" id="btn-close-review-modal">&times;</button>
+            </div>
+            <div class="modal-body" id="review-modal-body">
+                <!-- Populated dynamically by app.js -->
+            </div>
+            <div class="modal-footer" id="review-modal-footer">
+                <!-- Action buttons context-aware -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL B: WINNER DECLARATION PANEL (Wireframe 5 Overlay) -->
+    <div class="modal-overlay" id="winner-declaration-overlay">
+        <div class="modal-window">
+            <div class="modal-header">
+                <h3 class="modal-title">Winner Declaration & Reward Payout</h3>
+                <button class="modal-close-btn" id="btn-close-winner-modal">&times;</button>
+            </div>
+            <form id="winner-declaration-form">
+                <div class="modal-body">
+                    
+                    <div class="content-card" style="background:#f8fafc; border:1px dashed var(--border-color);">
+                        <div class="mb-2">Nominee: <strong id="win-nominee-name" class="font-bold" style="color:var(--color-primary);">Vivek Sharma</strong></div>
+                        <div class="mb-2">Nominated By: <span id="win-nominator-name">Rahul Verma</span></div>
+                        <div>Award: <strong id="win-award-title">Best Innovator Award</strong></div>
+                    </div>
+
+                    <div class="form-row">
+                        <!-- Reward Type -->
+                        <div class="form-group">
+                            <label for="win-reward-type">Select Reward Type *</label>
+                            <select id="win-reward-type" class="form-control" required>
+                                <option value="Monetary">Monetary</option>
+                                <option value="Voucher">Voucher</option>
+                                <option value="Recognition">Recognition</option>
+                            </select>
+                        </div>
+
+                        <!-- Reward Amount -->
+                        <div class="form-group">
+                            <label for="win-reward-amount">Reward Amount (₹) *</label>
+                            <input type="number" id="win-reward-amount" class="form-control" value="25000" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <!-- Reward Title -->
+                        <div class="form-group">
+                            <label for="win-reward-title">Reward Title *</label>
+                            <input type="text" id="win-reward-title" class="form-control" value="Best Innovator Winner" required>
+                        </div>
+                        
+                        <!-- Date -->
+                        <div class="form-group">
+                            <label for="win-announce-date">Announcement Date *</label>
+                            <input type="date" id="win-announce-date" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="win-remarks">Remarks (Citation) *</label>
+                        <textarea id="win-remarks" class="form-control" placeholder="Outstanding innovation and impact..." required></textarea>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-winner">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="background:var(--color-accent-red)">Declare Winner</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL C: DIGITAL CERTIFICATE DRAWER -->
+    <div class="modal-overlay" id="cert-overlay">
+        <div class="modal-window" style="max-width: 660px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Printable Recognition Certificate</h3>
+                <button class="modal-close-btn" id="btn-close-cert-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="certificate-preview-box" id="cert-box">
+                    <div class="cert-header">Terumo Certificate of Recognition</div>
+                    <div class="cert-title">Award of Excellence</div>
+                    <div class="cert-text">This is proudly presented to</div>
+                    <div class="cert-recipient" id="lbl-cert-recipient">Vivek Sharma</div>
+                    <div class="cert-text">in appreciation of outstanding performance and achievements in</div>
+                    <div class="cert-award-name" id="lbl-cert-award">Best Innovator Award</div>
+                    
+                    <div class="cert-footer">
+                        <div class="cert-sig">
+                            <div class="font-bold">Amit Kapoor</div>
+                            <div>Director, Terumo</div>
+                        </div>
+                        <div class="cert-seal">ReW</div>
+                        <div class="cert-sig">
+                            <div id="lbl-cert-date" class="font-bold">14 May 2026</div>
+                            <div>Awarded Date</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="window.print()"><i class="fa-solid fa-print"></i> Print</button>
+                <button class="btn btn-primary" id="btn-cert-download-mock"><i class="fa-solid fa-download"></i> Download</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL D: ADD/EDIT AWARD -->
+    <div class="modal-overlay" id="award-form-overlay">
+        <div class="modal-window">
+            <div class="modal-header">
+                <h3 class="modal-title" id="award-modal-title">Add Reward Program</h3>
+                <button class="modal-close-btn" id="btn-close-award-modal">&times;</button>
+            </div>
+            <form id="admin-award-form">
+                <div class="modal-body">
+                    <input type="hidden" id="award-id-input">
+                    <div class="form-group">
+                        <label for="award-title-input">Award Title *</label>
+                        <input type="text" id="award-title-input" class="form-control" placeholder="e.g. Best Innovator Award" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="award-desc-input">Description *</label>
+                        <textarea id="award-desc-input" class="form-control" placeholder="e.g. Outstanding innovation..." required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="award-type-input">Reward Type *</label>
+                            <select id="award-type-input" class="form-control" required>
+                                <option value="Monetary">Monetary</option>
+                                <option value="Voucher">Voucher</option>
+                                <option value="Recognition">Recognition</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="award-budget-input">Total Budget (₹) *</label>
+                            <input type="number" id="award-budget-input" class="form-control" placeholder="500000" min="0" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="award-frequency-input">Frequency *</label>
+                            <select id="award-frequency-input" class="form-control" required>
+                                <option value="Monthly">Monthly</option>
+                                <option value="Quarterly">Quarterly</option>
+                                <option value="Yearly">Yearly</option>
+                                <option value="One-time">One-time</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="award-winners-input">Max Winners *</label>
+                            <input type="number" id="award-winners-input" class="form-control" placeholder="5" min="1" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="award-start-input">Start Date *</label>
+                            <input type="date" id="award-start-input" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="award-end-input">End Date *</label>
+                            <input type="date" id="award-end-input" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label class="check-label flex align-center gap-2">
+                            <input type="checkbox" id="award-allow-self-nom"> Allow Self-Nomination
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-award-form">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Program</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL E: ADD/EDIT EMPLOYEE -->
+    <div class="modal-overlay" id="employee-form-overlay">
+        <div class="modal-window">
+            <div class="modal-header">
+                <h3 class="modal-title" id="employee-modal-title">Add Employee</h3>
+                <button class="modal-close-btn" id="btn-close-employee-modal">&times;</button>
+            </div>
+            <form id="admin-employee-form">
+                <div class="modal-body">
+                    <input type="hidden" id="employee-id-input">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="employee-firstname-input">First Name *</label>
+                            <input type="text" id="employee-firstname-input" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="employee-lastname-input">Last Name *</label>
+                            <input type="text" id="employee-lastname-input" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="employee-email-input">Email Address *</label>
+                        <input type="email" id="employee-email-input" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="employee-designation-input">Designation *</label>
+                        <input type="text" id="employee-designation-input" class="form-control" placeholder="e.g. Senior Software Engineer" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="employee-role-input">Role *</label>
+                            <select id="employee-role-input" class="form-control" required>
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="employee-dept-input">Department *</label>
+                            <select id="employee-dept-input" class="form-control" required>
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="employee-manager-input">Line Manager</label>
+                        <select id="employee-manager-input" class="form-control">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-employee-form">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Employee</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL D: NOMINATION SUBMISSION SUCCESS -->
+    <div class="modal-overlay" id="nomination-success-overlay">
+        <div class="modal-window" style="max-width: 400px; text-align: center; padding: 2rem;">
+            <div class="success-icon-wrapper">
+                <div class="custom-success-icon">
+                    <div class="checkmark-circle">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <div class="sparkle sp-1"></div>
+                    <div class="sparkle sp-2"></div>
+                    <div class="sparkle sp-3"></div>
+                    <div class="sparkle sp-4"></div>
+                    <div class="sparkle sp-5"></div>
+                    <div class="sparkle sp-6"></div>
+                    <div class="sparkle sp-7"></div>
+                    <div class="sparkle sp-8"></div>
+                </div>
+            </div>
+            <h3 style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 700; margin-bottom: 0.75rem;">Nomination Submitted Successfully!</h3>
+            <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5;">Your nomination has been submitted and is awaiting review.</p>
+            <button class="btn btn-primary" id="btn-success-go-dashboard" style="width: 100%; justify-content: center; padding: 0.75rem;">Go to Dashboard</button>
+        </div>
+    </div>
+
+    <!-- TOAST INJECTOR -->
+    <div id="toast-container"></div>
+
+    <!-- SCRIPTS -->
+    <script src="db.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

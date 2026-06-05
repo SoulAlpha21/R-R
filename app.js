@@ -68,6 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         
+        // Initialize particle animation on login pane background
+        initParticlesConstellation();
+
         // Log in Vivek Sharma (EMP001 - Employee) by default
         logInUser(1, true);
     }
@@ -2414,6 +2417,130 @@ document.addEventListener('DOMContentLoaded', () => {
         window.requestAnimationFrame(step);
     }
 
+    // --- LOGIN PARTICLES CONSTELLATION ANIMATION ---
+    function initParticlesConstellation() {
+        const canvas = document.getElementById('login-particles-canvas');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        const container = document.querySelector('.login-left-pane');
+        if (!container) return;
+        
+        let width = canvas.width = container.offsetWidth;
+        let height = canvas.height = container.offsetHeight;
+        
+        const particles = [];
+        const particleCount = 45;
+        const connectionDistance = 100;
+        const mouse = { x: null, y: null, radius: 150 };
+        
+        // Handle resize
+        window.addEventListener('resize', () => {
+            if (container.offsetWidth && container.offsetHeight) {
+                width = canvas.width = container.offsetWidth;
+                height = canvas.height = container.offsetHeight;
+            }
+        });
+        
+        // Track mouse movement relative to left pane container
+        container.addEventListener('mousemove', (e) => {
+            const rect = container.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+        });
+        
+        container.addEventListener('mouseleave', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+        
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.4; // slow movements
+                this.vy = (Math.random() - 0.5) * 0.4;
+                this.radius = Math.random() * 1.5 + 1;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                // Bounce off edges
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+                ctx.fill();
+            }
+        }
+        
+        // Initialize
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+        
+        function drawLines() {
+            for (let i = 0; i < particles.length; i++) {
+                const p1 = particles[i];
+                
+                // Connection to mouse
+                if (mouse.x !== null && mouse.y !== null) {
+                    const dx = p1.x - mouse.x;
+                    const dy = p1.y - mouse.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < mouse.radius) {
+                        const alpha = (1 - dist / mouse.radius) * 0.25;
+                        ctx.beginPath();
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(mouse.x, mouse.y);
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+                
+                // Connections between particles
+                for (let j = i + 1; j < particles.length; j++) {
+                    const p2 = particles[j];
+                    const dx = p1.x - p2.x;
+                    const dy = p1.y - p2.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (dist < connectionDistance) {
+                        const alpha = (1 - dist / connectionDistance) * 0.12;
+                        ctx.beginPath();
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+                        ctx.lineWidth = 0.3;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            
+            drawLines();
+            
+            requestAnimationFrame(animate);
+        }
+        
+        animate();
+    }
+
     // Modal helpers setup
     setupModalCloseEvents();
 
@@ -2421,3 +2548,4 @@ document.addEventListener('DOMContentLoaded', () => {
     init();
 
 });
+

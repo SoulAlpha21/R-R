@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TERUMO - Rewards & Recognitions (ReWandReC)</title>
     <!-- Stylesheet -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=9">
     <!-- FontAwesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -13,24 +13,41 @@
 
     <!-- Login screen overlay -->
     <div id="login-container" class="login-overlay active">
-        <div class="login-card split-login-card">
+        <div class="split-login-card">
             <!-- Left Pane: Branding & Elevate campaign -->
             <div class="login-left-pane animate-fade-in">
+                <!-- Faint network connections background -->
+                <div class="login-network-bg">
+                    <canvas id="login-particles-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: block; pointer-events: none;"></canvas>
+                </div>
+
                 <div class="login-left-brand">
-                    <img src="terumo_logo.png" alt="Terumo Logo" class="login-left-logo-img">
-                    <div class="login-left-title">ReWandReC</div>
-                    <div class="login-left-subtitle">Rewards & Recognitions</div>
+                    <div class="login-left-brand-box">
+                        <img src="terumo_logo.png" alt="Terumo Logo" class="login-left-logo-img">
+                    </div>
                 </div>
                 
                 <div class="login-left-campaign">
-                    <img src="elevate_logo.png" alt="Elevate Logo" class="login-elevate-logo">
+                    <img src="elevate_logo.png?v=5" alt="Elevate Logo" class="login-elevate-logo">
                 </div>
                 
-                <!-- Bottom mountain graphics silhouette styling -->
+                <!-- Bottom geometric overlapping mountains silhouette -->
                 <div class="login-left-bg-mountains">
-                    <svg viewBox="0 0 400 100" preserveAspectRatio="none" style="width: 100%; height: 70px; display: block; fill: #cbd5e1; opacity: 0.4;">
-                        <polygon points="0,100 60,35 120,75 180,25 250,85 310,15 370,65 400,30 400,100" />
-                        <polygon points="0,100 90,45 150,85 210,40 280,80 340,30 400,85 400,100" style="fill: #94a3b8; opacity: 0.6;" />
+                    <svg viewBox="0 0 400 100" preserveAspectRatio="none" style="width: 100%; height: 155px; display: block;">
+                        <!-- Mountain back left -->
+                        <polygon points="-20,100 50,45 130,100" fill="#047857" opacity="0.35" />
+                        <!-- Mountain back right -->
+                        <polygon points="250,100 340,30 420,100" fill="#065f46" opacity="0.4" />
+                        <!-- Mountain middle left -->
+                        <polygon points="40,100 125,20 210,100" fill="#10b981" opacity="0.25" />
+                        <!-- Mountain middle right -->
+                        <polygon points="170,100 250,45 330,100" fill="#059669" opacity="0.45" />
+                        <!-- Mountain front left -->
+                        <polygon points="0,100 80,40 160,100" fill="#0f766e" opacity="0.3" />
+                        <!-- Mountain front center-right -->
+                        <polygon points="200,100 290,25 380,100" fill="#34d399" opacity="0.5" />
+                        <!-- Mountain front rightmost -->
+                        <polygon points="280,100 360,50 440,100" fill="#047857" opacity="0.4" />
                     </svg>
                 </div>
             </div>
@@ -57,15 +74,15 @@
                         </div>
                     </div>
                     
-                    <div class="flex justify-between align-center mb-4" style="font-size: 0.8rem;">
-                        <label class="check-label">
-                            <input type="checkbox" checked> Remember me
+                    <div class="flex justify-between align-center mb-4" style="font-size: 0.825rem;">
+                        <label class="check-label" style="display: flex; align-items: center; gap: 0.4rem; font-weight: 500; color: var(--text-secondary);">
+                            <input type="checkbox" checked style="width: 15px; height: 15px; cursor: pointer;"> Remember me
                         </label>
-                        <a href="#" style="color: var(--color-primary); text-decoration: none; font-weight: 600;">Forgot Password?</a>
+                        <a href="#" style="color: #00a883; text-decoration: none; font-weight: 600;">Forgot Password?</a>
                     </div>
                     
-                    <button type="submit" class="btn btn-primary w-full" style="justify-content: center; padding: 0.75rem; font-size: 0.95rem;">
-                        <i class="fa-solid fa-right-to-bracket"></i> Login
+                    <button type="submit" class="btn btn-primary w-full" style="justify-content: center; padding: 0.8rem; font-size: 0.95rem; font-weight: 600; background: #008542; border-color: #008542; border-radius: 8px;">
+                        <i class="fa-solid fa-right-to-bracket" style="margin-right: 0.5rem;"></i> Login
                     </button>
                 </form>
             </div>

@@ -55,10 +55,12 @@
             <!-- Right Pane: Form input elements -->
             <div class="login-right-pane animate-slide-up">
                 <form id="login-form" class="login-form">
-                    <h2 class="login-welcome">Welcome Back!</h2>
-                    <p class="login-welcome-sub">Login to your account</p>
+                    <div class="login-header-group sequential-row">
+                        <h2 class="login-welcome">Welcome Back!</h2>
+                        <p class="login-welcome-sub">Login to your account</p>
+                    </div>
                     
-                    <div class="form-group">
+                    <div class="form-group sequential-row">
                         <label for="login-email">Email or Employee Code</label>
                         <div class="input-icon-wrapper">
                             <i class="fa-solid fa-envelope"></i>
@@ -66,7 +68,7 @@
                         </div>
                     </div>
                     
-                    <div class="form-group">
+                    <div class="form-group sequential-row">
                         <label for="login-password">Password</label>
                         <div class="input-icon-wrapper">
                             <i class="fa-solid fa-lock"></i>
@@ -74,14 +76,14 @@
                         </div>
                     </div>
                     
-                    <div class="flex justify-between align-center mb-4" style="font-size: 0.825rem;">
+                    <div class="flex justify-between align-center mb-4 sequential-row" style="font-size: 0.825rem;">
                         <label class="check-label" style="display: flex; align-items: center; gap: 0.4rem; font-weight: 500; color: var(--text-secondary);">
                             <input type="checkbox" checked style="width: 15px; height: 15px; cursor: pointer;"> Remember me
                         </label>
                         <a href="#" style="color: #00a883; text-decoration: none; font-weight: 600;">Forgot Password?</a>
                     </div>
                     
-                    <button type="submit" class="btn btn-primary w-full" style="justify-content: center; padding: 0.8rem; font-size: 0.95rem; font-weight: 600; background: #008542; border-color: #008542; border-radius: 8px;">
+                    <button type="submit" class="btn btn-primary w-full btn-login-premium sequential-row" style="justify-content: center;">
                         <i class="fa-solid fa-right-to-bracket" style="margin-right: 0.5rem;"></i> Login
                     </button>
                 </form>

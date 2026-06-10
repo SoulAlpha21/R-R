@@ -46,10 +46,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function init() {
         populateUserSelector();
         setupNavigation();
+        setupMobileSidebar();
         setupRoleSwitcher();
         setupNominationFormEvents();
         setupAIEnhancer();
         setupApprovalsTabs();
+        setupReleasesTabs();
         setupNotificationsTabs();
         setupDirectoryFilters();
         setupGlobalSearch();
@@ -102,7 +104,26 @@ document.addEventListener('DOMContentLoaded', () => {
         userRoleSelector.value = userId;
         
         // Set profile details
-        currentUserAvatar.textContent = `${user.first_name[0]}${user.last_name[0]}`;
+        const mobileUserAvatar = document.getElementById('mobile-user-avatar');
+        if (user.profile_photo) {
+            currentUserAvatar.innerHTML = `<img src="${user.profile_photo}" alt="${escapeHTML(user.first_name)}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+            const headerAvatar = document.getElementById('header-user-avatar');
+            if (headerAvatar) {
+                headerAvatar.innerHTML = `<img src="${user.profile_photo}" alt="${escapeHTML(user.first_name)}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+            }
+            if (mobileUserAvatar) {
+                mobileUserAvatar.innerHTML = `<img src="${user.profile_photo}" alt="${escapeHTML(user.first_name)}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+            }
+        } else {
+            currentUserAvatar.textContent = `${user.first_name[0]}${user.last_name[0]}`;
+            const headerAvatar = document.getElementById('header-user-avatar');
+            if (headerAvatar) {
+                headerAvatar.textContent = `${user.first_name[0]}${user.last_name[0]}`;
+            }
+            if (mobileUserAvatar) {
+                mobileUserAvatar.textContent = `${user.first_name[0]}${user.last_name[0]}`;
+            }
+        }
         currentUserName.textContent = `${user.first_name} ${user.last_name}`;
         
         const role = roles.find(r => r.role_id === user.role_id) || {};
@@ -113,6 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
             dashboard: document.querySelector('[data-view="dashboard"]'),
             nominations: document.querySelector('[data-view="nominations"]'),
             approvals: document.getElementById('nav-approvals'),
+            releases: document.getElementById('nav-releases'),
             reports: document.querySelector('[data-view="reports"]'),
             employees: document.querySelector('[data-view="employees"]'),
             notifications: document.querySelector('[data-view="notifications"]'),
@@ -129,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const accessByLevel = {
             1: ['dashboard', 'nominations', 'notifications'], // Employee
             2: ['dashboard', 'nominations', 'approvals', 'notifications'], // Manager
-            3: ['dashboard', 'approvals', 'reports', 'employees', 'notifications', 'audit'], // HR Manager
+            3: ['dashboard', 'approvals', 'releases', 'reports', 'employees', 'notifications', 'audit'], // HR Manager
             4: ['dashboard', 'nominations', 'approvals', 'notifications', 'settings'], // Leadership
             5: ['dashboard', 'employees', 'audit', 'settings'] // Admin
         };
@@ -199,6 +221,45 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function setupMobileSidebar() {
+        const toggleBtn = document.getElementById('btn-mobile-toggle-sidebar');
+        const closeBtn = document.getElementById('btn-close-mobile-sidebar');
+        const backdrop = document.getElementById('sidebar-backdrop');
+        const sidebar = document.querySelector('aside');
+        
+        if (!toggleBtn || !sidebar) return;
+        
+        const openSidebar = () => {
+            sidebar.classList.add('open');
+            if (backdrop) backdrop.style.display = 'block';
+        };
+        
+        const closeSidebar = () => {
+            sidebar.classList.remove('open');
+            if (backdrop) backdrop.style.display = 'none';
+        };
+        
+        toggleBtn.addEventListener('click', openSidebar);
+        
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeSidebar);
+        }
+        
+        if (backdrop) {
+            backdrop.addEventListener('click', closeSidebar);
+        }
+        
+        // Auto-collapse on nav click for mobile viewports
+        const navLinks = sidebar.querySelectorAll('.nav-links .nav-item');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) {
+                    closeSidebar();
+                }
+            });
+        });
+    }
+
     function switchView(viewName) {
         currentView = viewName;
         
@@ -236,6 +297,8 @@ document.addEventListener('DOMContentLoaded', () => {
             loadNominationFormContext();
         } else if (currentView === 'approvals') {
             renderApprovalsData();
+        } else if (currentView === 'releases') {
+            renderReleasesData();
         } else if (currentView === 'reports') {
             renderReportsData();
         } else if (currentView === 'employees') {
@@ -249,15 +312,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- DYNAMIC BADGE & TIMELINE ALERT UPDATES ---
     function updateBadgeCounts() {
-        const approvals = window.db.getPendingApprovals().filter(a => a.approver_id === currentUser.user_id);
+        const pendingAll = window.db.getPendingApprovals().filter(a => a.approver_id === currentUser.user_id);
         const notifications = window.db.getTable('notifications').filter(n => n.user_id === currentUser.user_id && !n.is_read);
         
+        let approvalsCount = 0;
+        let releasesCount = 0;
+        
+        if (getCurrentUserRoleLevel() === 3) {
+            // HR separates normal validation approvals (level_id !== 3) from award releases (level_id === 3)
+            approvalsCount = pendingAll.filter(a => a.level_id !== 3).length;
+            releasesCount = pendingAll.filter(a => a.level_id === 3).length;
+        } else {
+            approvalsCount = pendingAll.length;
+            releasesCount = 0;
+        }
+        
         // Approvals badge
-        if (approvals.length > 0) {
-            navApprovalsCount.textContent = approvals.length;
+        if (approvalsCount > 0) {
+            navApprovalsCount.textContent = approvalsCount;
             navApprovalsCount.style.display = 'inline-block';
         } else {
             navApprovalsCount.style.display = 'none';
+        }
+
+        // Award Releases badge
+        const navReleasesCount = document.getElementById('nav-releases-count');
+        if (navReleasesCount) {
+            if (releasesCount > 0) {
+                navReleasesCount.textContent = releasesCount;
+                navReleasesCount.style.display = 'inline-block';
+            } else {
+                navReleasesCount.style.display = 'none';
+            }
         }
 
         // Notifications sidebar and header badge
@@ -592,32 +678,53 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- VIEW B: NOMINATION FORM SUBMISSION (Wireframe 2) ---
+    function populateNomineeDropdown(nominationType) {
+        const empSelect = document.getElementById('wiz-select-employee');
+        if (!empSelect) return;
+        
+        const prevVal = empSelect.value;
+        empSelect.innerHTML = '<option value="">-- Choose Employee --</option>';
+        
+        const users = window.db.getTable('users');
+        const roles = window.db.getTable('roles');
+        
+        users.forEach(u => {
+            const uRole = roles.find(r => r.role_id === u.role_id) || {};
+            
+            if (nominationType === 'Self') {
+                if (u.user_id !== (currentUser ? currentUser.user_id : null)) {
+                    return;
+                }
+            } else if (nominationType === 'Manager') {
+                if (uRole.role_level !== 1) {
+                    return;
+                }
+            } else if (nominationType === 'Leadership') {
+                if (uRole.role_level === 4 || uRole.role_level === 5) {
+                    return;
+                }
+            }
+            
+            const opt = document.createElement('option');
+            opt.value = u.user_id;
+            opt.textContent = `${u.first_name} ${u.last_name} (${u.employee_code})`;
+            empSelect.appendChild(opt);
+        });
+        
+        if (prevVal) {
+            const options = Array.from(empSelect.options);
+            if (options.some(opt => opt.value === prevVal)) {
+                empSelect.value = prevVal;
+            }
+        }
+    }
+
     function loadNominationFormContext() {
         const users = window.db.getTable('users');
         const awards = window.db.getTable('awards');
         const coreValues = window.db.getTable('core_values');
         const competencies = window.db.getTable('competencies');
         const roleLevel = getCurrentUserRoleLevel();
-
-        // Populates Employee List dropdown
-        const empSelect = document.getElementById('wiz-select-employee');
-        empSelect.innerHTML = '<option value="">-- Choose Employee --</option>';
-        users.forEach(u => {
-            const uRole = window.db.getTable('roles').find(r => r.role_id === u.role_id) || {};
-            if (uRole.role_level === 5) {
-                return; // Skip Admin from nomination select
-            }
-            if (roleLevel === 2 && uRole.role_level !== 1) {
-                return; // Managers can only nominate Employees (role level 1)
-            }
-            if (roleLevel < 4 && uRole.role_level === 3) {
-                return; // Skip HR users from non-leadership nominators
-            }
-            const opt = document.createElement('option');
-            opt.value = u.user_id;
-            opt.textContent = `${u.first_name} ${u.last_name} (${u.employee_code})`;
-            empSelect.appendChild(opt);
-        });
 
         // Populates active program dropdown
         const awardSelect = document.getElementById('wiz-select-award');
@@ -686,6 +793,8 @@ document.addEventListener('DOMContentLoaded', () => {
             selfRadio.checked = true;
             selfRadio.disabled = false;
             if (selfParentLabel) selfParentLabel.style.display = 'flex';
+            if (mgrParentLabel) mgrParentLabel.style.display = 'none';
+            if (ldrParentLabel) ldrParentLabel.style.display = 'none';
             
             mgrRadio.disabled = true;
             ldrRadio.disabled = true;
@@ -702,19 +811,33 @@ document.addEventListener('DOMContentLoaded', () => {
             selfRadio.disabled = true;
             if (selfParentLabel) selfParentLabel.style.display = 'none';
             
-            mgrRadio.disabled = false;
-            ldrRadio.disabled = false;
-            catTeam.disabled = false;
-            
             // Show the options row for non-employee nomination flows
             const selectorsRow = document.getElementById('wiz-selectors-row');
             if (selectorsRow) selectorsRow.style.display = 'grid';
             
             if (roleLevel === 4) {
+                // Nominated by Leadership: show only Leadership box
                 ldrRadio.checked = true;
+                ldrRadio.disabled = false;
+                if (ldrParentLabel) ldrParentLabel.style.display = 'flex';
+                
+                mgrRadio.checked = false;
+                mgrRadio.disabled = true;
+                if (mgrParentLabel) mgrParentLabel.style.display = 'none';
+                
+                catTeam.disabled = false;
                 toggleNominationTypeUI('Leadership');
             } else {
+                // Nominated by Manager (roleLevel 2 or 3): show only Manager box
                 mgrRadio.checked = true;
+                mgrRadio.disabled = false;
+                if (mgrParentLabel) mgrParentLabel.style.display = 'flex';
+                
+                ldrRadio.checked = false;
+                ldrRadio.disabled = true;
+                if (ldrParentLabel) ldrParentLabel.style.display = 'none';
+                
+                catTeam.disabled = false;
                 toggleNominationTypeUI('Manager');
             }
         }
@@ -788,6 +911,93 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    function getNominationContextForAI() {
+        const isTeam = document.getElementById('wiz-cat-team')?.checked;
+        let nomineeNames = "";
+        
+        if (isTeam) {
+            if (selectedWizNominees && selectedWizNominees.length > 0) {
+                const users = window.db.getTable('users');
+                const names = selectedWizNominees.map(id => {
+                    const u = users.find(user => user.user_id === Number(id));
+                    return u ? `${u.first_name} ${u.last_name}` : `User #${id}`;
+                });
+                nomineeNames = names.join(", ");
+            } else {
+                nomineeNames = "the team";
+            }
+        } else {
+            const empVal = document.getElementById('wiz-select-employee')?.value;
+            if (empVal) {
+                const u = window.db.getTable('users').find(user => user.user_id === Number(empVal));
+                nomineeNames = u ? `${u.first_name} ${u.last_name}` : "the employee";
+            } else {
+                nomineeNames = "the employee";
+            }
+        }
+
+        const awardVal = document.getElementById('wiz-select-award')?.value;
+        let awardTitle = "Outstanding Achievement";
+        if (awardVal) {
+            const a = window.db.getTable('awards').find(award => award.award_id === Number(awardVal));
+            if (a) awardTitle = a.title;
+        }
+
+        // Checked core values
+        const checkedCheckboxes = document.querySelectorAll('input[name="wiz_values"]:checked');
+        let coreValuesList = [];
+        if (checkedCheckboxes.length > 0) {
+            const dbValues = window.db.getTable('core_values');
+            checkedCheckboxes.forEach(cb => {
+                const valObj = dbValues.find(v => v.core_value_id === Number(cb.value));
+                if (valObj) {
+                    coreValuesList.push(valObj.value_name);
+                } else {
+                    const labelText = cb.closest('label')?.textContent.trim();
+                    if (labelText) coreValuesList.push(labelText);
+                }
+            });
+        }
+        
+        return {
+            nomineeNames,
+            awardTitle,
+            coreValues: coreValuesList
+        };
+    }
+
+    function streamTextIntoElement(element, fullText, callback) {
+        if (!element) return;
+        
+        const originalReadOnly = element.readOnly;
+        const originalStyle = element.getAttribute('style') || '';
+        
+        element.readOnly = true;
+        
+        // Glowing outline & transition
+        element.style.outline = '2px solid #d97706';
+        element.style.borderColor = '#d97706';
+        element.style.boxShadow = '0 0 10px rgba(217, 119, 6, 0.35)';
+        element.style.transition = 'all 0.3s ease';
+
+        const words = fullText.split(/(\s+)/);
+        let currentWordIndex = 0;
+        element.value = "";
+        
+        const interval = setInterval(() => {
+            if (currentWordIndex < words.length) {
+                element.value += words[currentWordIndex];
+                currentWordIndex++;
+                element.scrollTop = element.scrollHeight;
+            } else {
+                clearInterval(interval);
+                element.readOnly = originalReadOnly;
+                element.setAttribute('style', originalStyle);
+                if (callback) callback();
+            }
+        }, 40);
+    }
+
     function setupAIEnhancer() {
         const btnReason = document.getElementById('btn-ai-enhance-reason');
         const btnOutcome = document.getElementById('btn-ai-enhance-outcome');
@@ -801,22 +1011,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
                 
-                // Disable button and show spinner loading indicator
                 btnReason.disabled = true;
                 const originalHTML = btnReason.innerHTML;
                 btnReason.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Polishing draft...';
                 
-                setTimeout(() => {
-                    const enhanced = enhanceReasonText(text);
-                    textarea.value = enhanced;
-                    
-                    // Restore button
+                const context = getNominationContextForAI();
+                const enhanced = enhanceReasonText(text, context);
+                
+                streamTextIntoElement(textarea, enhanced, () => {
                     btnReason.disabled = false;
                     btnReason.innerHTML = originalHTML;
-                    
                     showToast('AI successfully polished and enhanced your nomination reason!', 'success');
                     triggerConfettiExplosion();
-                }, 1200);
+                });
             });
         }
         
@@ -837,80 +1044,130 @@ document.addEventListener('DOMContentLoaded', () => {
                 const originalHTML = btnOutcome.innerHTML;
                 btnOutcome.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Optimizing achievements...';
                 
-                setTimeout(() => {
-                    if (outcomeText) {
-                        outcomeInput.value = enhanceOutcomeText(outcomeText);
+                let activeStreams = 0;
+                const onStreamFinish = () => {
+                    activeStreams--;
+                    if (activeStreams === 0) {
+                        btnOutcome.disabled = false;
+                        btnOutcome.innerHTML = originalHTML;
+                        showToast('AI successfully optimized your achievement outcomes and metrics!', 'success');
+                        triggerConfettiExplosion();
                     }
-                    if (metricText) {
-                        metricInput.value = enhanceMetricText(metricText);
-                    }
-                    
-                    btnOutcome.disabled = false;
-                    btnOutcome.innerHTML = originalHTML;
-                    
-                    showToast('AI successfully optimized your achievement outcomes and metrics!', 'success');
-                    triggerConfettiExplosion();
-                }, 1200);
+                };
+
+                if (outcomeText) {
+                    activeStreams++;
+                    const enhancedOutcome = enhanceOutcomeText(outcomeText);
+                    streamTextIntoElement(outcomeInput, enhancedOutcome, onStreamFinish);
+                }
+                if (metricText) {
+                    activeStreams++;
+                    const enhancedMetric = enhanceMetricText(metricText);
+                    streamTextIntoElement(metricInput, enhancedMetric, onStreamFinish);
+                }
             });
         }
     }
     
-    function enhanceReasonText(text) {
+    function enhanceReasonText(text, context) {
+        const nominee = context ? context.nomineeNames : "the nominee";
+        const award = context ? context.awardTitle : "this award";
+        const values = (context && context.coreValues && context.coreValues.length > 0) 
+            ? context.coreValues 
+            : ["Innovation", "Excellence"];
+            
         const lower = text.toLowerCase();
         
+        let polishedDraft = text;
+        polishedDraft = polishedDraft
+            .replace(/\bhelp(ed)?\b/gi, 'champion$1')
+            .replace(/\b(make|built|made)\b/gi, 'architected')
+            .replace(/\b(fix|fixed)\b/gi, 'resolved')
+            .replace(/\b(did|worked on)\b/gi, 'spearheaded')
+            .replace(/\b(good|great|nice)\b/gi, 'exceptional')
+            .replace(/\b(saved|save)\b/gi, 'optimized')
+            .replace(/\b(program|code)\b/gi, 'architectural solutions')
+            .replace(/\b(quick|fast)\b/gi, 'expeditious');
+
+        if (!polishedDraft.endsWith('.')) polishedDraft += '.';
+
+        let valuesClause = "";
+        if (values.length === 1) {
+            valuesClause = `This achievement is a direct reflection of their commitment to ${values[0]}`;
+        } else if (values.length > 1) {
+            const lastVal = values[values.length - 1];
+            const initialVals = values.slice(0, values.length - 1).join(", ");
+            valuesClause = `This exceptional contribution directly embodies our core values of ${initialVals} and ${lastVal}`;
+        } else {
+            valuesClause = `This accomplishment showcases their dedication to our core organizational tenets`;
+        }
+
+        let coreNarrative = "";
         if (lower.includes('telemetry') || lower.includes('iot') || lower.includes('sensor')) {
-            return "Demonstrated exceptional technical leadership and innovation in telemetry systems engineering. Successfully spearheaded the optimization of the data streaming pipeline, resolved critical communication latency bottlenecks, and enhanced real-time sensor monitoring reliability by 40%.";
+            coreNarrative = `By demonstrating outstanding technical capability in telemetry systems and real-time sensor integration, they successfully resolved critical latency bottlenecks and streamlined data transmission pipelines. ${polishedDraft}`;
+        } else if (lower.includes('innovat') || lower.includes('new') || lower.includes('design') || lower.includes('architect')) {
+            coreNarrative = `With an innovative design-thinking approach, they pioneered the architecture of a key system module, bringing modern development paradigms to our engineering workflow and accelerating timeline velocity. ${polishedDraft}`;
+        } else if (lower.includes('customer') || lower.includes('client') || lower.includes('hospital') || lower.includes('user')) {
+            coreNarrative = `Demonstrating exceptional empathy and client stewardship, they addressed critical user experience pain points, thereby elevating hospital-partner satisfaction and building trust in our platform. ${polishedDraft}`;
+        } else if (lower.includes('team') || lower.includes('collab') || lower.includes('support') || lower.includes('ment')) {
+            coreNarrative = `By fostering an inclusive environment and actively mentoring team members, they played a pivotal role in keeping cross-functional projects on track and aligned with delivery milestones. ${polishedDraft}`;
+        } else if (lower.includes('save') || lower.includes('speed') || lower.includes('time') || lower.includes('hours') || lower.includes('limit')) {
+            coreNarrative = `Through smart process automation and eliminating redundant workflows, they successfully optimized team execution, resulting in substantial savings of engineering hours and cycle times. ${polishedDraft}`;
+        } else {
+            coreNarrative = `Their professional dedication has been instrumental in executing critical team milestones, driving measurable quality and operational value. ${polishedDraft}`;
         }
-        if (lower.includes('innovat') || lower.includes('new') || lower.includes('built') || lower.includes('design')) {
-            return "Exhibited outstanding technical vision and agility by design-thinking and architecting a novel automated module. This contribution significantly accelerated project delivery pipelines, optimized code modularity, and established a high benchmark for operational excellence across the team.";
-        }
-        if (lower.includes('customer') || lower.includes('client') || lower.includes('hospital') || lower.includes('user')) {
-            return "Championed customer and stakeholder success by resolving critical pain points and improving platform user experience. Directed vital client workshops, resulting in a dramatic increase in system satisfaction scores and securing long-term operational partnerships.";
-        }
-        if (lower.includes('team') || lower.includes('collab') || lower.includes('help') || lower.includes('support')) {
-            return "Fostered a highly collaborative team environment, consistently providing cross-functional support and mentoring peers. Seamlessly coordinated across department divisions to streamline integration schedules and ensure successful product deployment.";
-        }
-        if (lower.includes('save') || lower.includes('speed') || lower.includes('time') || lower.includes('hours')) {
-            return "Drove significant efficiency improvements by identifying and automating repetitive manual workflows. Optimized core processing pipelines, leading to a massive reduction in operational cycle time and saving substantial weekly engineering hours.";
-        }
-        
-        return `Demonstrated exceptional professional dedication and capability in executing critical project assignments. Successfully polished processes to drive business value, showing great alignment with core company values: "${text.replace(/[.\s]+$/, '')}" - establishing a strong foundation for continued team success and innovation.`;
+
+        return `In support of the nomination for ${nominee} for the ${award}, this statement recognizes their distinguished contributions. ${coreNarrative} ${valuesClause}, setting a high standard of professional excellence for the entire organization.`;
     }
     
     function enhanceOutcomeText(text) {
         const lower = text.toLowerCase();
+        let polished = text.replace(/[.\s]+$/, '');
+        
+        polished = polished
+            .replace(/\b(fix|fixed)\b/gi, 'successfully resolved')
+            .replace(/\b(made|built)\b/gi, 'architected')
+            .replace(/\b(saved|save)\b/gi, 'optimized')
+            .replace(/\b(help|helped)\b/gi, 'championed');
+
         if (lower.includes('schedule') || lower.includes('time') || lower.includes('early') || lower.includes('ahead')) {
-            return "Delivered all critical milestone modules significantly ahead of schedule, optimizing team velocity.";
+            return `Orchestrated the delivery of critical milestone modules substantially ahead of schedule, optimizing overall team velocity and timeline predictability. (${polished})`;
         }
         if (lower.includes('deploy') || lower.includes('rollout') || lower.includes('launch')) {
-            return "Successfully executed seamless system deployment with zero downtime, safeguarding hospital operations.";
+            return `Executed a flawless system deployment with zero operational downtime, ensuring uninterrupted hospital operations and service reliability. (${polished})`;
         }
         if (lower.includes('bug') || lower.includes('fix') || lower.includes('error') || lower.includes('test')) {
-            return "Engineered robust automated testing protocols, resulting in a zero-defect launch in production.";
+            return `Engineered robust automated validation protocols and testing frameworks, achieving a zero-defect deployment in production. (${polished})`;
         }
-        return `Successfully completed and optimized the key milestone: "${text.replace(/[.\s]+$/, '')}", driving measurable quality improvement.`;
+        
+        return `Successfully spearheaded the execution and optimization of the milestone: "${polished}", fostering measurable quality improvements and architectural stability.`;
     }
     
     function enhanceMetricText(text) {
         const lower = text.toLowerCase();
+        const cleanText = text.replace(/[.\s]+$/, '');
+        
         if (lower.includes('hour') || lower.includes('time') || lower.includes('saved')) {
-            return "Saved 40+ engineering hours weekly, translating to a 35% reduction in manual regression cycles.";
+            const matches = text.match(/\d+/);
+            const hours = matches ? matches[0] : "40";
+            return `Saved ${hours}+ engineering hours weekly, translating directly to a 35%+ reduction in manual cycles and overhead.`;
         }
         if (lower.includes('%') || lower.includes('percent') || lower.includes('boost') || lower.includes('improv')) {
             const matches = text.match(/\d+/);
             const pct = matches ? matches[0] : "40";
-            return `Generated a validated ${pct}% efficiency boost in core transaction speeds and system throughput.`;
+            return `Generated a validated ${pct}% performance efficiency improvement in system transaction speeds and throughput metrics.`;
         }
         if (lower.includes('cost') || lower.includes('budget') || lower.includes('money')) {
-            return "Reduced project operational overhead and infrastructure resource usage by 15% under budget.";
+            const matches = text.match(/\d+/);
+            const pct = matches ? matches[0] : "15";
+            return `Optimized operations to reduce infrastructure resource utilization and project overhead by ${pct}% under baseline budget.`;
         }
-        return `Achieved a validated optimization metric: "${text.replace(/[.\s]+$/, '')}" against corporate baseline targets.`;
+        return `Quantified a validated performance index of "${cleanText}", establishing a new baseline against corporate KPIs.`;
     }
 
     function toggleNominationTypeUI(type) {
         const empSelect = document.getElementById('wiz-select-employee');
         if (type === 'Self') {
-            empSelect.value = currentUser.user_id;
             empSelect.disabled = true;
             
             // Force Individual Category for Self Nominations
@@ -918,10 +1175,15 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('wiz-cat-team').disabled = true;
             document.getElementById('wiz-team-chips-box').style.display = 'none';
             document.getElementById('lbl-select-employee').textContent = 'Self-Nominated Employee *';
+            
+            populateNomineeDropdown(type);
+            empSelect.value = currentUser.user_id;
         } else {
             empSelect.disabled = false;
             empSelect.value = '';
             document.getElementById('wiz-cat-team').disabled = false;
+            
+            populateNomineeDropdown(type);
         }
     }
 
@@ -1026,8 +1288,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const awards = window.db.getTable('awards');
         const roleLevel = getCurrentUserRoleLevel();
         
-        // 1. Filter approvals assigned to current active user
-        let userApprovals = approvals.filter(ap => ap.approver_id === currentUser.user_id);
+        // 1. Filter approvals assigned to current active user (exclude HR release Level 3)
+        let userApprovals = approvals.filter(ap => ap.approver_id === currentUser.user_id && ap.level_id !== 3);
         
         // 2. Filter approvals by Tab status selector
         let filteredApprovals = [];
@@ -1142,6 +1404,167 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 document.getElementById('leadership-decision-forward-panel').style.display = 'none';
             }
+        }
+    }
+
+    let activeReleaseTab = 'pending'; // 'pending', 'approved', 'rejected'
+
+    function setupReleasesTabs() {
+        const pendingTab = document.getElementById('tab-pending-releases');
+        const approvedTab = document.getElementById('tab-approved-releases');
+        const rejectedTab = document.getElementById('tab-rejected-releases');
+
+        if (pendingTab) {
+            pendingTab.addEventListener('click', () => {
+                toggleReleasesTab('pending', pendingTab);
+            });
+        }
+        if (approvedTab) {
+            approvedTab.addEventListener('click', () => {
+                toggleReleasesTab('approved', approvedTab);
+            });
+        }
+        if (rejectedTab) {
+            rejectedTab.addEventListener('click', () => {
+                toggleReleasesTab('rejected', rejectedTab);
+            });
+        }
+    }
+
+    function toggleReleasesTab(tabName, element) {
+        activeReleaseTab = tabName;
+        
+        const tabHeaders = element.closest('.tab-headers');
+        if (tabHeaders) {
+            tabHeaders.querySelectorAll('button').forEach(b => {
+                b.classList.remove('active');
+            });
+        }
+        element.classList.add('active');
+        
+        renderReleasesData();
+    }
+
+    function renderReleasesData() {
+        const approvals = window.db.getTable('approvals');
+        const nominations = window.db.getTable('nominations');
+        const users = window.db.getTable('users');
+        const awards = window.db.getTable('awards');
+        const winners = window.db.getTable('winners');
+        
+        // 1. Filter approvals assigned to current active user for LEVEL 3 (HR Final Sign-off)
+        let userReleases = approvals.filter(ap => ap.approver_id === currentUser.user_id && ap.level_id === 3);
+        
+        // 2. Filter approvals by Tab status selector
+        let filteredReleases = [];
+        if (activeReleaseTab === 'pending') {
+            filteredReleases = userReleases.filter(ap => ap.status === 'Pending');
+        } else if (activeReleaseTab === 'approved') {
+            filteredReleases = userReleases.filter(ap => ap.status === 'Approved');
+        } else {
+            filteredReleases = userReleases.filter(ap => ap.status === 'Rejected');
+        }
+
+        const searchInput = document.querySelector('.search-input');
+        const searchVal = searchInput ? searchInput.value.trim().toLowerCase() : '';
+        if (searchVal) {
+            filteredReleases = filteredReleases.filter(app => {
+                const nom = nominations.find(n => n.nomination_id === app.nomination_id) || {};
+                const nomineeLinks = window.db.getTable('nomination_nominees').filter(nn => nn.nomination_id === nom.nomination_id);
+                const nomineeNames = nomineeLinks.map(link => {
+                    const u = users.find(user => user.user_id === link.user_id);
+                    return u ? `${u.first_name} ${u.last_name}` : '';
+                }).join(' ').toLowerCase();
+                
+                const nominator = users.find(u => u.user_id === nom.nominated_by) || {};
+                const nominatorName = `${nominator.first_name} ${nominator.last_name}`.toLowerCase();
+                
+                const award = awards.find(a => a.award_id === nom.award_id) || {};
+                const awardTitle = (award.title || '').toLowerCase();
+
+                return nomineeNames.includes(searchVal) ||
+                       nominatorName.includes(searchVal) ||
+                       awardTitle.includes(searchVal);
+            });
+        }
+
+        // Fill headers count stats
+        const countPending = document.getElementById('count-pending-releases');
+        const countApproved = document.getElementById('count-approved-releases');
+        const countRejected = document.getElementById('count-rejected-releases');
+        if (countPending) countPending.textContent = userReleases.filter(ap => ap.status === 'Pending').length;
+        if (countApproved) countApproved.textContent = userReleases.filter(ap => ap.status === 'Approved').length;
+        if (countRejected) countRejected.textContent = userReleases.filter(ap => ap.status === 'Rejected').length;
+
+        // Render Table Rows
+        const tbody = document.getElementById('releases-table-body');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        
+        if (filteredReleases.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center text-secondary">No matching release sign-offs.</td></tr>`;
+        } else {
+            filteredReleases.forEach((app, idx) => {
+                const nom = nominations.find(n => n.nomination_id === app.nomination_id) || {};
+                const nomineeLinks = window.db.getTable('nomination_nominees').filter(nn => nn.nomination_id === nom.nomination_id);
+                const nomineeNames = nomineeLinks.map(link => {
+                    const u = users.find(user => user.user_id === link.user_id);
+                    return u ? `${u.first_name} ${u.last_name}` : 'Unknown';
+                }).join(', ');
+                
+                const nominator = users.find(u => u.user_id === nom.nominated_by) || {};
+                const award = awards.find(a => a.award_id === nom.award_id) || {};
+                
+                // Get reward details from winners table
+                const nomineeWinners = winners.filter(w => w.nomination_id === nom.nomination_id);
+                const firstWinner = nomineeWinners[0] || {};
+                const payoutText = firstWinner.reward_type === 'Recognition' 
+                    ? 'Recognition' 
+                    : `₹${nomineeWinners.reduce((sum, w) => sum + w.reward_amount, 0).toLocaleString()}`;
+                
+                const rewardTitle = firstWinner.reward_title || 'N/A';
+                const dateDecision = firstWinner.awarded_date 
+                    ? new Date(firstWinner.awarded_date).toLocaleDateString() 
+                    : new Date(nom.submission_date).toLocaleDateString();
+                
+                const tr = document.createElement('tr');
+                tr.className = 'reveal-row';
+                tr.style.animationDelay = `${idx * 0.08}s`;
+                
+                let actionBtnHTML = '';
+                if (activeReleaseTab === 'pending') {
+                    actionBtnHTML = `
+                        <button class="btn btn-primary btn-sm review-release-btn" data-id="${nom.nomination_id}">
+                            <i class="fa-solid fa-unlock"></i> Release
+                        </button>
+                    `;
+                } else {
+                    actionBtnHTML = `
+                        <button class="btn btn-secondary btn-sm review-release-btn" data-id="${nom.nomination_id}">
+                            <i class="fa-solid fa-eye"></i> Details
+                        </button>
+                    `;
+                }
+
+                tr.innerHTML = `
+                    <td class="font-bold">${escapeHTML(nomineeNames)}</td>
+                    <td>${escapeHTML(award.title)}</td>
+                    <td>${escapeHTML(nominator.first_name + ' ' + nominator.last_name)}</td>
+                    <td><strong style="color: var(--color-primary);">${escapeHTML(payoutText)}</strong></td>
+                    <td><span class="badge info">${escapeHTML(rewardTitle)}</span></td>
+                    <td>${dateDecision}</td>
+                    <td class="text-right">${actionBtnHTML}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            tbody.querySelectorAll('.review-release-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const nomId = btn.getAttribute('data-id');
+                    const isPending = activeReleaseTab === 'pending';
+                    showNominationReviewModal(nomId, isPending);
+                });
+            });
         }
     }
 
@@ -1657,8 +2080,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 }
                 
+                let avatarHTML = '';
+                if (u.profile_photo) {
+                    avatarHTML = `<img src="${u.profile_photo}" alt="${escapeHTML(u.first_name)}" class="directory-avatar-img">`;
+                } else {
+                    const initials = ((u.first_name ? u.first_name[0] : '') + (u.last_name ? u.last_name[0] : '')).toUpperCase() || '?';
+                    avatarHTML = `<div class="directory-avatar-initials">${initials}</div>`;
+                }
+
                 tr.innerHTML = `
-                    <td class="font-bold">${escapeHTML(u.first_name + ' ' + u.last_name)} <br> <span style="font-size:0.75rem; color:var(--text-muted);">${u.designation}</span></td>
+                    <td>
+                        <div class="flex align-center gap-3">
+                            ${avatarHTML}
+                            <div>
+                                <span class="font-bold">${escapeHTML(u.first_name + ' ' + u.last_name)}</span>
+                                <span style="font-size:0.75rem; color:var(--text-muted); display:block;">${escapeHTML(u.designation)}</span>
+                            </div>
+                        </div>
+                    </td>
                     <td>${u.employee_code}</td>
                     <td>${escapeHTML(dept.department_name)}</td>
                     <td>${roleObj.role_name}</td>
@@ -1714,6 +2153,36 @@ document.addEventListener('DOMContentLoaded', () => {
                             document.getElementById('employee-role-input').value = employee.role_id;
                             document.getElementById('employee-dept-input').value = employee.department_id;
                             document.getElementById('employee-manager-input').value = employee.manager_id || '';
+
+                            // Populate photo uploader state for edit
+                            const previewImg = document.getElementById('employee-photo-preview');
+                            const initialsPreview = document.getElementById('employee-photo-initials-preview');
+                            const removeBtn = document.getElementById('btn-remove-employee-photo');
+                            const photoFile = document.getElementById('employee-photo-file');
+                            const form = document.getElementById('admin-employee-form');
+                            
+                            if (photoFile) photoFile.value = '';
+                            if (employee.profile_photo) {
+                                if (previewImg) {
+                                    previewImg.src = employee.profile_photo;
+                                    previewImg.style.display = 'block';
+                                }
+                                if (initialsPreview) initialsPreview.style.display = 'none';
+                                if (removeBtn) removeBtn.style.display = 'inline-flex';
+                                if (form) form.setAttribute('data-profile-photo', employee.profile_photo);
+                            } else {
+                                if (previewImg) {
+                                    previewImg.src = '';
+                                    previewImg.style.display = 'none';
+                                }
+                                if (initialsPreview) {
+                                    const initials = ((employee.first_name ? employee.first_name[0] : '') + (employee.last_name ? employee.last_name[0] : '')).toUpperCase() || '?';
+                                    initialsPreview.textContent = initials;
+                                    initialsPreview.style.display = 'flex';
+                                }
+                                if (removeBtn) removeBtn.style.display = 'none';
+                                if (form) form.removeAttribute('data-profile-photo');
+                            }
 
                             document.getElementById('employee-modal-title').textContent = 'Edit Employee';
                             openModal('employee-form');
@@ -1814,11 +2283,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (n.type === 'Approval') iconClass = 'fa-square-check';
                 else if (n.type === 'Award') iconClass = 'fa-cake-candles';
                 
-                const initials = currentUser.first_name[0] + currentUser.last_name[0];
+                let avatarHTML = '';
+                if (currentUser.profile_photo) {
+                    avatarHTML = `<img src="${currentUser.profile_photo}" alt="${escapeHTML(currentUser.first_name)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                } else {
+                    avatarHTML = (currentUser.first_name[0] + currentUser.last_name[0]).toUpperCase();
+                }
                 const dateText = new Date(n.created_at).toLocaleString();
                 
                 li.innerHTML = `
-                    <div class="feed-avatar">${initials}</div>
+                    <div class="feed-avatar">${avatarHTML}</div>
                     <div class="feed-body">
                         <div class="feed-header">
                             <span class="feed-user">${escapeHTML(n.title)}</span>
@@ -2321,6 +2795,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('employee-dept-input').value = '1';
                 document.getElementById('employee-manager-input').value = '';
 
+                // Clear photo uploader elements
+                const previewImg = document.getElementById('employee-photo-preview');
+                const initialsPreview = document.getElementById('employee-photo-initials-preview');
+                const removeBtn = document.getElementById('btn-remove-employee-photo');
+                const photoFile = document.getElementById('employee-photo-file');
+                const form = document.getElementById('admin-employee-form');
+                
+                if (photoFile) photoFile.value = '';
+                if (previewImg) {
+                    previewImg.src = '';
+                    previewImg.style.display = 'none';
+                }
+                if (initialsPreview) {
+                    initialsPreview.textContent = '?';
+                    initialsPreview.style.display = 'flex';
+                }
+                if (removeBtn) removeBtn.style.display = 'none';
+                if (form) form.removeAttribute('data-profile-photo');
+
                 document.getElementById('employee-modal-title').textContent = 'Add Employee';
                 openModal('employee-form');
             });
@@ -2339,7 +2832,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     designation: document.getElementById('employee-designation-input').value.trim(),
                     role_id: Number(document.getElementById('employee-role-input').value),
                     department_id: Number(document.getElementById('employee-dept-input').value),
-                    manager_id: document.getElementById('employee-manager-input').value || null
+                    manager_id: document.getElementById('employee-manager-input').value || null,
+                    profile_photo: employeeForm.getAttribute('data-profile-photo') || null
                 };
 
                 try {
@@ -2357,6 +2851,87 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
+
+        // Photo Uploader Change Event Listener
+        const employeePhotoFile = document.getElementById('employee-photo-file');
+        const employeePhotoPreview = document.getElementById('employee-photo-preview');
+        const employeePhotoInitials = document.getElementById('employee-photo-initials-preview');
+        const btnRemovePhoto = document.getElementById('btn-remove-employee-photo');
+        
+        if (employeePhotoFile) {
+            employeePhotoFile.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                // Validate file size (< 500KB)
+                if (file.size > 500 * 1024) {
+                    showToast('File size must be under 500KB', 'error');
+                    employeePhotoFile.value = '';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const base64Url = evt.target.result;
+                    if (employeePhotoPreview) {
+                        employeePhotoPreview.src = base64Url;
+                        employeePhotoPreview.style.display = 'block';
+                    }
+                    if (employeePhotoInitials) {
+                        employeePhotoInitials.style.display = 'none';
+                    }
+                    if (btnRemovePhoto) {
+                        btnRemovePhoto.style.display = 'inline-flex';
+                    }
+                    if (employeeForm) {
+                        employeeForm.setAttribute('data-profile-photo', base64Url);
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Photo Remove Button click listener
+        if (btnRemovePhoto) {
+            btnRemovePhoto.addEventListener('click', () => {
+                if (employeePhotoFile) employeePhotoFile.value = '';
+                if (employeePhotoPreview) {
+                    employeePhotoPreview.src = '';
+                    employeePhotoPreview.style.display = 'none';
+                }
+                if (employeePhotoInitials) {
+                    const first = document.getElementById('employee-firstname-input').value.trim();
+                    const last = document.getElementById('employee-lastname-input').value.trim();
+                    const initials = ((first[0] || '') + (last[0] || '')).toUpperCase() || '?';
+                    employeePhotoInitials.textContent = initials;
+                    employeePhotoInitials.style.display = 'flex';
+                }
+                btnRemovePhoto.style.display = 'none';
+                if (employeeForm) {
+                    employeeForm.removeAttribute('data-profile-photo');
+                }
+            });
+        }
+
+        // Live Initials Updater
+        const firstNameInput = document.getElementById('employee-firstname-input');
+        const lastNameInput = document.getElementById('employee-lastname-input');
+
+        const updateInitialsPreview = () => {
+            if (employeeForm && employeeForm.getAttribute('data-profile-photo')) {
+                // If a photo is already uploaded, don't show initials
+                return;
+            }
+            const first = firstNameInput ? firstNameInput.value.trim() : '';
+            const last = lastNameInput ? lastNameInput.value.trim() : '';
+            const initials = ((first[0] || '') + (last[0] || '')).toUpperCase() || '?';
+            if (employeePhotoInitials) {
+                employeePhotoInitials.textContent = initials;
+            }
+        };
+
+        if (firstNameInput) firstNameInput.addEventListener('input', updateInitialsPreview);
+        if (lastNameInput) lastNameInput.addEventListener('input', updateInitialsPreview);
     }
 
     // --- ENTRANCE LOGIN ACTION ---

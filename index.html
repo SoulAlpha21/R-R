@@ -92,14 +92,34 @@
     </div>
 
     <div id="app-container">
+        <!-- Sidebar Backdrop Overlay -->
+        <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+        
+        <!-- MOBILE HEADER BAR -->
+        <div class="mobile-header-bar">
+            <button id="btn-mobile-toggle-sidebar" class="mobile-toggle-btn" title="Toggle Sidebar">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="mobile-brand">
+                <img src="terumo_logo.png" alt="Terumo Logo" class="mobile-brand-logo">
+                <span class="mobile-brand-text">R&R</span>
+            </div>
+            <div class="mobile-header-actions">
+                <div class="header-avatar" id="mobile-user-avatar">VS</div>
+            </div>
+        </div>
         
         <!-- SIDEBAR NAVIGATION -->
         <aside>
             <div>
                 <!-- Terumo Brand Logo -->
-                <div class="brand">
+                <div class="brand" style="position: relative;">
                     <img src="terumo_logo.png" alt="Terumo Logo" class="brand-logo-img">
-                    <span class="brand-subtext">Rewards & Recognitions</span>
+                    <span class="brand-subtext" style="color: #94a3b8; border-top-color: var(--color-accent-red);">Rewards & Recognitions</span>
+                    <!-- Mobile Close Button -->
+                    <button id="btn-close-mobile-sidebar" style="display: none; position: absolute; right: 0; top: 0; background: transparent; border: none; color: #94a3b8; font-size: 1.5rem; cursor: pointer; padding: 0.25rem; line-height: 1; border-radius: 4px; transition: var(--transition-fast);" title="Close Sidebar">
+                        &times;
+                    </button>
                 </div>
                 
                 <ul class="nav-links">
@@ -111,6 +131,9 @@
                     </li>
                     <li class="nav-item" id="nav-approvals" data-view="approvals">
                         <a href="#"><i class="fa-solid fa-square-check"></i> Approvals <span class="tab-count" id="nav-approvals-count" style="display:none; background:var(--color-accent-red); color:white;">0</span></a>
+                    </li>
+                    <li class="nav-item" id="nav-releases" data-view="releases">
+                        <a href="#"><i class="fa-solid fa-gift"></i> Award Releases <span class="tab-count" id="nav-releases-count" style="display:none; background:var(--color-primary); color:white;">0</span></a>
                     </li>
                     <li class="nav-item" data-view="reports">
                         <a href="#"><i class="fa-solid fa-chart-simple"></i> Reports & Analytics</a>
@@ -142,7 +165,7 @@
                 <!-- Campaign Brand Footer -->
                 <div class="campaign-brand-footer">
                     <img src="elevate_logo.png" alt="Elevate Logo" class="campaign-logo-img">
-                    <span class="campaign-text">Terumo India</span>
+                    <span class="campaign-text" style="color: #94a3b8;">Terumo India</span>
                 </div>
             </div>
         </aside>
@@ -158,7 +181,7 @@
                     <input type="text" class="search-input" placeholder="Search anything...">
                 </div>
                 
-                <div class="flex align-center gap-4">
+                <div class="flex align-center gap-4" style="display: flex; align-items: center; gap: 1rem;">
                     <!-- Dynamic Identity Switcher -->
                     <div class="role-switcher-container">
                         <span class="role-switcher-label"><i class="fa-solid fa-circle-user"></i> Act As:</span>
@@ -168,10 +191,13 @@
                     </div>
                     
                     <!-- Notification bell with badge -->
-                    <button class="notification-bell-btn" id="bell-btn">
+                    <button class="notification-bell-btn" id="bell-btn" style="position: relative; display: flex; align-items: center; justify-content: center;">
                         <i class="fa-solid fa-bell"></i>
-                        <span class="bell-badge" id="bell-badge" style="display: none;">3</span>
+                        <span class="bell-badge" id="bell-badge" style="display: inline-block; width: 8px; height: 8px; background: var(--color-accent-red); border-radius: 50%; position: absolute; top: 0; right: 0; padding: 0;"></span>
                     </button>
+                    
+                    <!-- Header Profile Avatar -->
+                    <div class="header-avatar" id="header-user-avatar" style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: var(--color-primary); color: white; font-weight: 700; font-size: 0.75rem; border: 2px solid var(--border-color); cursor: pointer; flex-shrink: 0;">VS</div>
                     
                     <!-- Reset System Database Button -->
                     <button class="btn btn-secondary btn-sm" id="btn-db-reset-system" style="padding: 0.4rem 0.6rem; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 0.35rem; color: var(--color-accent-red); border-color: rgba(227, 0, 22, 0.15);" title="Reset system database to default settings">
@@ -199,26 +225,29 @@
 
                     <!-- Personal Stats -->
                     <div class="stats-grid">
-                        <div class="stat-card">
+                        <div class="stat-card" style="position: relative; overflow: hidden;">
                             <div class="stat-icon primary"><i class="fa-solid fa-trophy"></i></div>
                             <div class="stat-details">
                                 <h3>Total Rewards Received</h3>
                                 <div class="stat-number" id="emp-total-rewards">₹50,000</div>
                             </div>
+                            <div style="position: absolute; right: 0.5rem; bottom: -0.5rem; font-size: 5rem; opacity: 0.035; color: var(--text-primary); pointer-events: none;"><i class="fa-solid fa-trophy"></i></div>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card" style="position: relative; overflow: hidden;">
                             <div class="stat-icon secondary"><i class="fa-solid fa-medal"></i></div>
                             <div class="stat-details">
                                 <h3>Awards Won</h3>
                                 <div class="stat-number" id="emp-awards-count">2</div>
                             </div>
+                            <div style="position: absolute; right: 0.5rem; bottom: -0.5rem; font-size: 5rem; opacity: 0.035; color: var(--text-primary); pointer-events: none;"><i class="fa-solid fa-medal"></i></div>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card" style="position: relative; overflow: hidden;">
                             <div class="stat-icon warning"><i class="fa-solid fa-paper-plane"></i></div>
                             <div class="stat-details">
                                 <h3>Submitted Nominations</h3>
                                 <div class="stat-number" id="emp-nominations-count">1</div>
                             </div>
+                            <div style="position: absolute; right: 0.5rem; bottom: -0.5rem; font-size: 5rem; opacity: 0.035; color: var(--text-primary); pointer-events: none;"><i class="fa-solid fa-paper-plane"></i></div>
                         </div>
                     </div>
                     
@@ -621,6 +650,9 @@
                             <button type="button" class="btn btn-outline btn-sm ai-enhance-btn" id="btn-ai-enhance-reason" style="margin-top: 0.5rem; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; color: #a855f7; border-color: #a855f7; padding: 0.25rem 0.6rem;">
                                 <i class="fa-solid fa-wand-magic-sparkles"></i> AI Enhance Reason
                             </button>
+                            <span class="badge info" style="background: rgba(217, 119, 6, 0.08); color: #d97706; border: 1px solid rgba(217, 119, 6, 0.15); font-size: 0.7rem; padding: 0.25rem 0.5rem; display: inline-flex; align-items: center; gap: 0.25rem; margin-top: 0.5rem; vertical-align: middle;">
+                                <i class="fa-solid fa-brain"></i> Claude 3.5 Sonnet
+                            </span>
                         </div>
 
                         <!-- Core Values checklist -->
@@ -653,6 +685,9 @@
                             <button type="button" class="btn btn-outline btn-sm ai-enhance-btn" id="btn-ai-enhance-outcome" style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; color: #a855f7; border-color: #a855f7; padding: 0.25rem 0.6rem;">
                                 <i class="fa-solid fa-wand-magic-sparkles"></i> AI Enhance Achievements
                             </button>
+                            <span class="badge info" style="background: rgba(217, 119, 6, 0.08); color: #d97706; border: 1px solid rgba(217, 119, 6, 0.15); font-size: 0.7rem; padding: 0.25rem 0.5rem; display: inline-flex; align-items: center; gap: 0.25rem; vertical-align: middle;">
+                                <i class="fa-solid fa-brain"></i> Claude 3.5 Sonnet
+                            </span>
                         </div>
 
                         <!-- Attachments block -->
@@ -714,6 +749,44 @@
                     <div id="leadership-decision-forward-panel" class="flex justify-between align-center mt-4 p-4" style="background:#f8fafc; border-radius:8px; border:1px dashed var(--border-color); display:none;">
                         <span style="font-size:0.85rem; color:var(--text-secondary);"><i class="fa-solid fa-circle-info" style="color:var(--color-primary);"></i> Selected validation lines can be batched to leadership sign-off.</span>
                         <button class="btn btn-primary" id="btn-forward-batch-leadership">Forward to Leadership <i class="fa-solid fa-forward"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3b. HR AWARD RELEASES VIEW -->
+            <div id="releases-view" class="view-panel">
+                <div class="content-card">
+                    <div class="card-header">
+                        <div class="header-title-area">
+                            <h2 class="card-title"><i class="fa-solid fa-gift"></i> Award Release Sign-off Section</h2>
+                            <p style="font-size:0.8rem; color:var(--text-muted);">Review winner payouts declared by Leadership and release the certificate and rewards.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-headers">
+                        <button class="tab-btn active" id="tab-pending-releases">Pending Releases <span class="tab-count" id="count-pending-releases">0</span></button>
+                        <button class="tab-btn" id="tab-approved-releases">Released <span class="tab-count" id="count-approved-releases">0</span></button>
+                        <button class="tab-btn" id="tab-rejected-releases">Rejected <span class="tab-count" id="count-rejected-releases">0</span></button>
+                    </div>
+
+                    <!-- Table showing results -->
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Winner(s)</th>
+                                    <th>Award Program</th>
+                                    <th>Nominated By</th>
+                                    <th>Payout Amount</th>
+                                    <th>Winner Title</th>
+                                    <th>Decision Date</th>
+                                    <th class="text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="releases-table-body">
+                                <!-- Dynamic release lines -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -1294,6 +1367,23 @@
             <form id="admin-employee-form">
                 <div class="modal-body">
                     <input type="hidden" id="employee-id-input">
+                    <!-- Profile Photo Uploader -->
+                    <div class="form-group flex align-center gap-4 mb-4" style="margin-bottom: 1.5rem;">
+                        <div class="profile-photo-upload-wrapper">
+                            <img id="employee-photo-preview" src="" alt="Profile Preview" class="employee-preview-img" style="display: none;">
+                            <div id="employee-photo-initials-preview" class="employee-preview-initials">?</div>
+                        </div>
+                        <div>
+                            <label for="employee-photo-file" class="btn btn-secondary btn-sm" style="margin-bottom: 0.25rem; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.775rem; padding: 0.35rem 0.7rem; cursor: pointer;">
+                                <i class="fa-solid fa-camera"></i> Upload Photo
+                            </label>
+                            <input type="file" id="employee-photo-file" accept="image/*" style="display: none;">
+                            <p style="font-size: 0.725rem; color: var(--text-muted); margin: 0;">PNG, JPG or JPEG. Max 500KB.</p>
+                            <button type="button" id="btn-remove-employee-photo" class="btn btn-outline btn-sm" style="display: none; color: var(--color-accent-red); border-color: var(--color-accent-red); padding: 0.2rem 0.5rem; font-size: 0.725rem; margin-top: 0.35rem; align-items: center; gap: 0.25rem;">
+                                <i class="fa-solid fa-trash-can"></i> Remove
+                            </button>
+                        </div>
+                    </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="employee-firstname-input">First Name *</label>

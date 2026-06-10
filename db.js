@@ -19,13 +19,13 @@
             { department_id: 4, department_name: 'Leadership Office', department_code: 'LDR', department_head: 6, parent_department_id: null, location: 'HQ - Building C' }
         ],
         users: [
-            { user_id: 1, employee_code: 'EMP001', first_name: 'Vivek', last_name: 'Sharma', email: 'vivek.sharma@terumo.com', password: 'password123', role_id: 1, manager_id: 3, department_id: 1, designation: 'Software Engineer', joining_date: '2023-04-10', status: 'Active' },
-            { user_id: 2, employee_code: 'EMP002', first_name: 'Priya', last_name: 'Singh', email: 'priya.singh@terumo.com', password: 'password123', role_id: 1, manager_id: 3, department_id: 2, designation: 'Marketing Associate', joining_date: '2024-02-15', status: 'Active' },
-            { user_id: 3, employee_code: 'EMP003', first_name: 'Rahul', last_name: 'Verma', email: 'rahul.verma@terumo.com', password: 'password123', role_id: 2, manager_id: 6, department_id: 1, designation: 'Engineering Manager', joining_date: '2021-06-01', status: 'Active' },
-            { user_id: 4, employee_code: 'EMP004', first_name: 'Anita', last_name: 'Kumari', email: 'anita.kumari@terumo.com', password: 'password123', role_id: 1, manager_id: 5, department_id: 3, designation: 'HR Executive', joining_date: '2023-09-12', status: 'Active' },
-            { user_id: 5, employee_code: 'EMP005', first_name: 'Anjali', last_name: 'Mehta', email: 'anjali.mehta@terumo.com', password: 'password123', role_id: 3, manager_id: 6, department_id: 3, designation: 'HR Manager', joining_date: '2019-10-05', status: 'Active' },
-            { user_id: 6, employee_code: 'EMP006', first_name: 'Amit', last_name: 'Kapoor', email: 'amit.kapoor@terumo.com', password: 'password123', role_id: 4, manager_id: null, department_id: 4, designation: 'Director', joining_date: '2015-05-20', status: 'Active' },
-            { user_id: 7, employee_code: 'EMP000', first_name: 'Admin', last_name: 'User', email: 'admin.user@terumo.com', password: 'password123', role_id: 5, manager_id: null, department_id: 4, designation: 'System Administrator', joining_date: '2020-01-01', status: 'Active' }
+            { user_id: 1, employee_code: 'EMP001', first_name: 'Vivek', last_name: 'Sharma', email: 'vivek.sharma@terumo.com', password: 'password123', role_id: 1, manager_id: 3, department_id: 1, designation: 'Software Engineer', joining_date: '2023-04-10', status: 'Active', profile_photo: null },
+            { user_id: 2, employee_code: 'EMP002', first_name: 'Priya', last_name: 'Singh', email: 'priya.singh@terumo.com', password: 'password123', role_id: 1, manager_id: 3, department_id: 2, designation: 'Marketing Associate', joining_date: '2024-02-15', status: 'Active', profile_photo: null },
+            { user_id: 3, employee_code: 'EMP003', first_name: 'Rahul', last_name: 'Verma', email: 'rahul.verma@terumo.com', password: 'password123', role_id: 2, manager_id: 6, department_id: 1, designation: 'Engineering Manager', joining_date: '2021-06-01', status: 'Active', profile_photo: null },
+            { user_id: 4, employee_code: 'EMP004', first_name: 'Anita', last_name: 'Kumari', email: 'anita.kumari@terumo.com', password: 'password123', role_id: 1, manager_id: 5, department_id: 3, designation: 'HR Executive', joining_date: '2023-09-12', status: 'Active', profile_photo: null },
+            { user_id: 5, employee_code: 'EMP005', first_name: 'Anjali', last_name: 'Mehta', email: 'anjali.mehta@terumo.com', password: 'password123', role_id: 3, manager_id: 6, department_id: 3, designation: 'HR Manager', joining_date: '2019-10-05', status: 'Active', profile_photo: null },
+            { user_id: 6, employee_code: 'EMP006', first_name: 'Amit', last_name: 'Kapoor', email: 'amit.kapoor@terumo.com', password: 'password123', role_id: 4, manager_id: null, department_id: 4, designation: 'Director', joining_date: '2015-05-20', status: 'Active', profile_photo: null },
+            { user_id: 7, employee_code: 'EMP000', first_name: 'Admin', last_name: 'User', email: 'admin.user@terumo.com', password: 'password123', role_id: 5, manager_id: null, department_id: 4, designation: 'System Administrator', joining_date: '2020-01-01', status: 'Active', profile_photo: null }
         ],
         awards: [
             { award_id: 1, title: 'Best Innovator Award', description: 'Outstanding innovation and excellence in engineering/product architecture.', award_type: 'Monetary', total_budget: 500000.00, used_budget: 175000.00, allow_self_nomination: true, start_date: '2026-01-01', end_date: '2026-12-31', frequency: 'Quarterly', max_winners: 6, created_by: 5, status: 'Active' },
@@ -581,9 +581,50 @@
                     
                     this.createNotification(6, 'Leadership Review Required', `Nomination "${nomination.title}" is ready for final sign-off.`, 'Approval');
                 } 
-                else if (appRecord.level_id === 2) { // Leadership Approved -> Ready to announce
-                    nomination.status = 'Approved';
-                    this.createNotification(nomination.nominated_by, 'Nomination Approved!', `Your nomination "${nomination.title}" was fully approved by leadership! Ready for announcement.`, 'Status');
+                else if (appRecord.level_id === 2) { // Leadership Approved -> Escalate to HR Final Sign-off (Level 3)
+                    nomination.current_level = 3;
+                    
+                    const nextAppId = approvals.length > 0 ? Math.max(...approvals.map(ap => ap.approval_id)) + 1 : 1;
+                    const hrUsers = this.getTable('users').filter(u => u.role_id === 3);
+                    const hrId = hrUsers.length > 0 ? hrUsers[0].user_id : 5; // default to Anjali Mehta
+
+                    approvals.push({
+                        approval_id: nextAppId,
+                        nomination_id: nomination.nomination_id,
+                        approver_id: hrId,
+                        level_id: 3, // HR Final Sign-off
+                        status: 'Pending',
+                        comments: comments || 'Approved by Leadership',
+                        action_date: null
+                    });
+
+                    // Create default winner entry if not exists (so details rendering in releases view does not fail)
+                    const winners = this.getTable('winners');
+                    const hasWinner = winners.some(w => w.nomination_id === nomination.nomination_id);
+                    if (!hasWinner) {
+                        const award = this.getTable('awards').find(a => a.award_id === nomination.award_id) || {};
+                        const nominees = this.getTable('nomination_nominees').filter(nn => nn.nomination_id === nomination.nomination_id);
+                        
+                        nominees.forEach(nominee => {
+                            const nextWinnerId = winners.length > 0 ? Math.max(...winners.map(w => w.winner_id)) + 1 : 1;
+                            const certificateId = `cert_${String(nextWinnerId).padStart(3, '0')}`;
+                            
+                            winners.push({
+                                winner_id: nextWinnerId,
+                                nomination_id: nomination.nomination_id,
+                                user_id: nominee.user_id,
+                                award_id: award.award_id,
+                                reward_amount: (award.award_type === 'Recognition' ? 0 : 25000) / nominees.length,
+                                reward_type: award.award_type,
+                                reward_title: `${award.title} Winner`,
+                                certificate_url: `certificates/${certificateId}.pdf`,
+                                is_announced: false, // Pending HR release
+                                awarded_date: new Date().toISOString()
+                            });
+                        });
+                    }
+
+                    this.createNotification(hrId, 'HR Final Sign-off Required', `Leadership has approved nomination "${nomination.title}". Please review and release the award.`, 'Approval');
                 }
                 else if (appRecord.level_id === 3) { // HR Final Sign-off Approved -> release award
                     nomination.status = 'Approved';
@@ -972,7 +1013,8 @@
                 department_id: Number(data.department_id),
                 designation: data.designation,
                 joining_date: data.joining_date || new Date().toISOString().split('T')[0],
-                status: 'Active'
+                status: 'Active',
+                profile_photo: data.profile_photo || null
             };
 
             users.push(newUser);
@@ -1004,6 +1046,7 @@
             user.manager_id = data.manager_id ? Number(data.manager_id) : null;
             user.department_id = Number(data.department_id);
             user.designation = data.designation;
+            user.profile_photo = data.profile_photo !== undefined ? data.profile_photo : user.profile_photo;
             
             this.logAction(actorUserId, 'UPDATE', 'users', userId, oldVal, JSON.stringify(user));
             this.save();
